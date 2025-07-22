@@ -72,22 +72,13 @@ cd TestPembelianNote
 ```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-npm start
-   ```
-
-4. Run on your preferred platform:
 ```bash
-# For Android
-npm run android
+npm install
+```
 
-# For web
-npm run web
+3. Run on your preferred platform:
+```bash
+npm expo run:android
 ```
 
 ## Project Structure
