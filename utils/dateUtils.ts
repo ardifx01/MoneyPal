@@ -1,0 +1,43 @@
+export const dateUtils = {
+  monthOrder: [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ],
+  // Format date to YYYY-MM-DD
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  },
+
+  // Format date for display (e.g., "Monday, January 1, 2024")
+  formatDateForDisplay(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  },
+
+  // Format date for short display (e.g., "Jan 1, 2024")
+  formatDateShort(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  },
+
+  // Parse date string to Date object
+  parseDate(dateString: string): Date {
+    return new Date(dateString);
+  },
+
+  getMonthString(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  }
+}; 

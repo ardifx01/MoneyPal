@@ -1,50 +1,198 @@
-# Welcome to your Expo app 👋
+# MoneyPal - Daily Expense Tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A comprehensive React Native application for tracking daily expenses, income, and managing personal finances with a clean, intuitive interface.
 
-## Get started
+## Features
 
-1. Install dependencies
+### 📅 Date Picker
+- Interactive date picker at the top of the screen
+- Shows current selected date in a readable format
+- Tap to change date and view transactions for different days
+- Automatically updates the transaction list when date changes
 
+### 💰 Transaction Management
+- Add new transactions (income or expenses) with enhanced features
+- **Calculator Integration**: Full numeric keypad for precise amount entry
+- **Category System**: Predefined categories with icons and colors
+  - **Expense Categories**: Food & Dining, Transportation, Shopping, Entertainment, Health & Medical, Education, Bills & Utilities, Clothes, Laundry, Home & Garden, Personal Care, Other
+  - **Income Categories**: Salary, Freelance, Investment, Gift, Refund, Other
+- **Description Support**: Optional text descriptions for transactions
+- **Image Attachments**: Add photos to transactions for receipts or documentation
+- View all transactions for the selected date with rich details
+- Delete transactions with confirmation
+- Different styling for income (green) and expenses (red)
+- Currency formatting for all amounts
+
+### 🏦 Budget Management
+- Set monthly budget limits for overall spending and for each expense category
+- Visual progress bars show how much of each budget is used
+- When a budget is reached, a red warning and red progress bar appear for clear feedback
+
+### 📊 Daily Summary
+- Real-time calculation of daily totals
+- Shows total income, total expenses, and net balance
+- Color-coded balance (green for positive, red for negative)
+- Clean card-based design
+
+### 💾 Persistent Storage
+- All data stored locally using AsyncStorage
+- Data persists between app sessions
+- No internet connection required
+
+### 🎨 Modern UI/UX
+- Clean, modern design with proper spacing
+- Responsive layout for both Android and iOS
+- Smooth animations and transitions
+- Intuitive navigation and interactions
+- Rich visual feedback with category icons and colors
+
+## Tech Stack
+
+- **React Native** with Expo
+- **TypeScript** for type safety
+- **AsyncStorage** for local data persistence
+- **@react-native-community/datetimepicker** for date selection
+- **expo-image-picker** for image selection
+- **React Navigation** (via Expo Router)
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Expo CLI
+-Android Emulator (or physical device)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd TestPembelianNote
+```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. Start the development server:
    ```bash
-   npx expo start
+npm start
    ```
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+4. Run on your preferred platform:
 ```bash
-npm run reset-project
+# For Android
+npm run android
+
+# For web
+npm run web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure
 
-## Learn more
+```
+app/
+├── components/
+│   ├── DatePicker.tsx          # Date selection component
+│   ├── TransactionItem.tsx     # Individual transaction display
+│   ├── Summary.tsx             # Daily summary card
+│   ├── AddTransactionModal.tsx # Add transaction modal
+│   ├── Calculator.tsx          # Numeric calculator for amounts
+│   └── CategoryPicker.tsx      # Category selection modal
+├── utils/
+│   ├── storage.ts              # AsyncStorage utilities
+│   ├── dateUtils.ts            # Date formatting utilities
+│   └── categories.ts           # Category definitions and utilities
+├── types.ts                    # TypeScript type definitions
+├── _layout.tsx                 # App layout configuration
+└── index.tsx                   # Main app screen
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Usage
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. **View Transactions**: The app opens to today's date by default, showing all transactions for that day.
 
-## Join the community
+2. **Change Date**: Tap the date at the top to open the date picker and select a different date.
 
-Join our community of developers creating universal apps.
+3. **Add Transaction**: Tap the floating "+" button to open the add transaction modal with enhanced features:
+   - **Title**: Enter a descriptive title for the transaction
+   - **Amount**: Tap to open a full calculator for precise amount entry
+   - **Type**: Choose between Income or Expense
+   - **Category**: Select from predefined categories with visual icons
+   - **Description**: Add optional notes or details
+   - **Image**: Attach photos (receipts, documents, etc.)
+   - **Date**: Choose the transaction date
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+4. **Delete Transaction**: Tap the "×" button on any transaction to delete it (with confirmation).
+
+5. **View Summary**: The daily summary is always visible, showing income, expenses, and net balance.
+
+## Features in Detail
+
+### Calculator Component
+- Full numeric keypad with decimal support
+- Real-time amount formatting
+- Clear and delete functionality
+- Modal presentation for easy access
+
+### Category System
+- Visual category selection with icons and colors
+- Separate categories for income and expenses
+- Easy category switching when changing transaction type
+- Category display in transaction list
+
+### Image Support
+- Photo library access for image selection
+- Image editing and cropping
+- Optional image attachments for transactions
+- Image display in transaction list
+- Permission handling for photo access
+
+### Enhanced Transaction Display
+- Category icons and names
+- Optional description text
+- Transaction images (if attached)
+- Improved layout for rich information
+
+### Data Persistence
+- All transactions stored locally using AsyncStorage
+- Automatic data loading on app startup
+- Efficient filtering by date
+- Complete transaction data including images and descriptions
+
+### UI/UX Design
+- Consistent color scheme throughout the app
+- Proper spacing and typography
+- Responsive design for different screen sizes
+- Accessibility considerations
+- Rich visual feedback with category colors and icons
+
+### Budget Limit Warnings
+- Set monthly limits for overall and per-category spending
+- Progress bars visually indicate usage for each budget
+- When spending reaches or exceeds a limit, the progress bar turns red and a red warning message "Amount has reached the limit" is displayed
+- Helps you stay on track and avoid overspending
+
+## Permissions
+
+The app requires the following permissions:
+- **Photo Library Access**: To add images to transactions
+- **Storage Access**: For saving and retrieving transaction data
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly on both iOS and Android
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support or questions, please open an issue in the repository.
