@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
@@ -63,6 +64,7 @@ export default function ExportRecord() {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [tempStartDate, setTempStartDate] = useState(new Date());
   const [tempEndDate, setTempEndDate] = useState(new Date());
+  const { t, i18n } = useTranslation();
   useEffect(() => {
     dapatTransaction();
     dapatMataUang();
@@ -83,7 +85,7 @@ export default function ExportRecord() {
     const filteredTransactions = getFilteredTransactions();
     
     if (filteredTransactions.length === 0) {
-      Alert.alert('No Data', 'There are no transactions in the selected date range to export.');
+      Alert.alert(t('export.no_data_title'), t('export.no_data_message'));
       return;
     }
 
@@ -112,8 +114,8 @@ export default function ExportRecord() {
 
       // Share the file
       const shareOptions = {
-        title: 'Share Transactions',
-        message: 'Your transaction data exported from MoneyPal',
+        title: t('export.share_title'),
+        message: t('export.share_message'),
         url: `file://${filePath}`,
         type: 'text/csv',
         filename: fileName
@@ -122,8 +124,8 @@ export default function ExportRecord() {
       await Share.open(shareOptions);
 
       Alert.alert(
-        'Export Successful',
-        `Transactions exported to ${fileName} (${selectedDirectory}) and shared successfully.`,
+        t('export.success_title'),
+        t('export.success_message', { fileName, selectedDirectory }),
         [{ text: 'OK' }]
       );
       setExportModalVisible(false);
@@ -132,14 +134,14 @@ export default function ExportRecord() {
         setExportModalVisible(false);
         if(apakahExporBerhasil) {
           Alert.alert(
-            'Export Successful',
-            `Transactions exported to ${fileName} (${selectedDirectory}) and shared successfully.`,
+            t('export.success_title'),
+            t('export.success_message', { fileName, selectedDirectory }),
             [{ text: 'OK' }]
           );
         }
       } else {
         console.error('Export error:', error);
-        Alert.alert('Export Failed', 'Failed to export transactions. Please try again.');
+        Alert.alert(t('export.failed_title'), t('export.failed_message'));
       }
     } finally {
       setIsExporting(false);
@@ -197,10 +199,10 @@ export default function ExportRecord() {
   // Add a function to get the label for the selected quick range
   const getQuickRangeLabel = () => {
     switch (selectedQuickRange) {
-      case '7days': return 'Last 7 Days';
-      case 'month': return 'Last Month';
-      case 'all': return 'All Time';
-      case 'custom': return 'Custom Range';
+      case '7days': return t('export.quick_range.7days');
+      case 'month': return t('export.quick_range.month');
+      case 'all': return t('export.quick_range.all');
+      case 'custom': return t('export.quick_range.custom');
       default: return '';
     }
   };
@@ -210,7 +212,7 @@ export default function ExportRecord() {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           {/* Header with Back Button */}
-          <HeaderAplikasi subtitle='Export Records' pageUtama={false} icon='download-outline' />
+          <HeaderAplikasi subtitle={t('export.export_records')} pageUtama={false} icon='download-outline' />
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
             {/* Stats Cards */}
@@ -220,7 +222,7 @@ export default function ExportRecord() {
                   <Ionicons name="document-text-outline" size={24} color="#007bff" />
                 </View>
                 <Text style={styles.statNumber}>{stats.totalTransactions}</Text>
-                <Text style={styles.statLabel}>Total Transactions</Text>
+                <Text style={styles.statLabel}>{t('export.total_transactions')}</Text>
               </View>
 
               <View style={styles.statCard}>
@@ -230,7 +232,7 @@ export default function ExportRecord() {
                 <Text style={[styles.statNumber, { color: '#28a745' }]}>
                   {uangUtils.formatAmount(stats.totalIncome, mataUang)}
                 </Text>
-                <Text style={styles.statLabel}>Total Income</Text>
+                <Text style={styles.statLabel}>{t('export.total_income')}</Text>
               </View>
 
               <View style={styles.statCard}>
@@ -240,7 +242,7 @@ export default function ExportRecord() {
                 <Text style={[styles.statNumber, { color: '#dc3545' }]}>
                   {uangUtils.formatAmount(stats.totalExpenses, mataUang)}
                 </Text>
-                <Text style={styles.statLabel}>Total Expenses</Text>
+                <Text style={styles.statLabel}>{t('export.total_expenses')}</Text>
               </View>
             </View>
 
@@ -248,7 +250,7 @@ export default function ExportRecord() {
             <View style={styles.optionsContainer}>
               <View style={styles.sectionTitle}>
                 <Ionicons name="settings-outline" size={20} color="#007bff" />
-                <Text style={styles.sectionTitleText}>Export Settings</Text>
+                <Text style={styles.sectionTitleText}>{t('export.export_settings')}</Text>
               </View>
 
               {/* Directory Selection */}
@@ -262,8 +264,8 @@ export default function ExportRecord() {
                       <Ionicons name="folder-outline" size={24} color="#007bff" />
                     </View>
                     <View style={styles.cardText}>
-                      <Text style={styles.cardTitle}>Export Directory</Text>
-                      <Text style={styles.cardSubtitle}>Choose where to save the file</Text>
+                      <Text style={styles.cardTitle}>{t('export.export_directory')}</Text>
+                      <Text style={styles.cardSubtitle}>{t('export.choose_directory')}</Text>
                     </View>
                   </View>
                   <View style={styles.cardRight}>
@@ -284,9 +286,9 @@ export default function ExportRecord() {
                       <Ionicons name="calendar-outline" size={24} color="#007bff" />
                     </View>
                     <View style={styles.cardText}>
-                      <Text style={styles.cardTitle}>Date Range</Text>
+                      <Text style={styles.cardTitle}>{t('export.date_range')}</Text>
                       <Text style={styles.cardSubtitle}>
-                        {dateUtils.formatDateShort(dateRange.startDate)} - {dateUtils.formatDateShort(dateRange.endDate)}
+                        {dateUtils.formatDateShort(dateRange.startDate, i18n.language)} - {dateUtils.formatDateShort(dateRange.endDate, i18n.language)}
                       </Text>
                       <Text style={styles.quickRangeLabel}>{getQuickRangeLabel()}</Text>
                     </View>
@@ -308,7 +310,7 @@ export default function ExportRecord() {
                     color="#fff" 
                   />
                   <Text style={styles.exportButtonText}>
-                    {isExporting ? 'Exporting...' : 'Export to CSV'}
+                    {isExporting ? t('export.exporting') : t('export.export_to_csv')}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -319,13 +321,13 @@ export default function ExportRecord() {
           <Modal
             visible={directoryModalVisible}
             animationType="slide"
-            transparent
+            backdropColor={"transparent"}
             onRequestClose={() => setDirectoryModalVisible(false)}
           >
             <Pressable style={styles.modalOverlay} onPress={() => setDirectoryModalVisible(false)}>
               <View style={styles.modalContent}>
                 <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>Select Directory</Text>
+                  <Text style={styles.modalTitle}>{t('export.select_directory')}</Text>
                   <TouchableOpacity onPress={() => setDirectoryModalVisible(false)}>
                     <Ionicons name="close" size={24} color="#666" />
                   </TouchableOpacity>
@@ -361,39 +363,39 @@ export default function ExportRecord() {
           <Modal
             visible={dateRangeModalVisible}
             animationType="slide"
-            transparent
+            backdropColor={"transparent"}
             onRequestClose={() => setDateRangeModalVisible(false)}
           >
             <Pressable style={styles.modalOverlay} onPress={() => setDateRangeModalVisible(false)}>
               <View style={styles.modalContent}>
                 <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>Select Date Range</Text>
+                  <Text style={styles.modalTitle}>{t('export.select_date_range')}</Text>
                   <TouchableOpacity onPress={() => setDateRangeModalVisible(false)}>
                     <Ionicons name="close" size={24} color="#666" />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.dateRangeContent}>
                   <View style={styles.dateInputContainer}>
-                    <Text style={styles.dateLabel}>Start Date</Text>
+                    <Text style={styles.dateLabel}>{t('export.start_date')}</Text>
                     <TouchableOpacity 
                       style={styles.dateButton}
                       onPress={() => setShowStartDatePicker(true)}
                     >
                       <Text style={styles.dateButtonText}>
-                        {dateUtils.formatDateShort(tempStartDate)}
+                        {dateUtils.formatDateShort(tempStartDate, i18n.language)}
                       </Text>
                       <Ionicons name="calendar-outline" size={20} color="#007bff" />
                     </TouchableOpacity>
                   </View>
 
                   <View style={styles.dateInputContainer}>
-                    <Text style={styles.dateLabel}>End Date</Text>
+                    <Text style={styles.dateLabel}>{t('export.end_date')}</Text>
                     <TouchableOpacity 
                       style={styles.dateButton}
                       onPress={() => setShowEndDatePicker(true)}
                     >
                       <Text style={styles.dateButtonText}>
-                        {dateUtils.formatDateShort(tempEndDate)}
+                        {dateUtils.formatDateShort(tempEndDate, i18n.language)}
                       </Text>
                       <Ionicons name="calendar-outline" size={20} color="#007bff" />
                     </TouchableOpacity>
@@ -410,7 +412,7 @@ export default function ExportRecord() {
                         setSelectedQuickRange('7days');
                       }}
                     >
-                      <Text style={[styles.quickDateButtonText, selectedQuickRange === '7days' && styles.quickDateButtonTextSelected]}>Last 7 Days</Text>
+                      <Text style={[styles.quickDateButtonText, selectedQuickRange === '7days' && styles.quickDateButtonTextSelected]}>{t('export.quick_range.7days')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.quickDateButton, selectedQuickRange === 'month' && styles.quickDateButtonSelected]}
@@ -422,7 +424,7 @@ export default function ExportRecord() {
                         setSelectedQuickRange('month');
                       }}
                     >
-                      <Text style={[styles.quickDateButtonText, selectedQuickRange === 'month' && styles.quickDateButtonTextSelected]}>Last Month</Text>
+                      <Text style={[styles.quickDateButtonText, selectedQuickRange === 'month' && styles.quickDateButtonTextSelected]}>{t('export.quick_range.month')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.quickDateButton, selectedQuickRange === 'all' && styles.quickDateButtonSelected]}
@@ -440,7 +442,7 @@ export default function ExportRecord() {
                         setSelectedQuickRange('all');
                       }}
                     >
-                      <Text style={[styles.quickDateButtonText, selectedQuickRange === 'all' && styles.quickDateButtonTextSelected]}>All Time</Text>
+                      <Text style={[styles.quickDateButtonText, selectedQuickRange === 'all' && styles.quickDateButtonTextSelected]}>{t('export.quick_range.all')}</Text>
                     </TouchableOpacity>
                   </View>
 
@@ -448,7 +450,7 @@ export default function ExportRecord() {
                     style={styles.confirmDateButton}
                     onPress={() => setDateRangeModalVisible(false)}
                   >
-                    <Text style={styles.confirmDateButtonText}>Confirm Range</Text>
+                    <Text style={styles.confirmDateButtonText}>{t('export.confirm_range')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -459,13 +461,13 @@ export default function ExportRecord() {
           <Modal
             visible={exportModalVisible}
             animationType="slide"
-            transparent
+            backdropColor={"transparent"}
             onRequestClose={() => setExportModalVisible(false)}
           >
             <Pressable style={styles.modalOverlay} onPress={() => setExportModalVisible(false)}>
               <View style={styles.modalContent}>
                 <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>Confirm Export</Text>
+                  <Text style={styles.modalTitle}>{t('export.confirm_export')}</Text>
                   <TouchableOpacity onPress={() => setExportModalVisible(false)}>
                     <Ionicons name="close" size={24} color="#666" />
                   </TouchableOpacity>
@@ -475,29 +477,29 @@ export default function ExportRecord() {
                     <Ionicons name="document-text-outline" size={48} color="#007bff" />
                   </View>
                   
-                  <Text style={styles.confirmationTitle}>Export Transactions</Text>
+                  <Text style={styles.confirmationTitle}>{t('export.export_transactions')}</Text>
                   
                   <View style={styles.exportDetailsContainer}>
                     <View style={styles.exportDetailRow}>
                       <Ionicons name="stats-chart-outline" size={20} color="#666" />
                       <Text style={styles.exportDetailText}>
-                        <Text style={styles.exportDetailLabel}>Transactions: </Text>
-                        {stats.totalTransactions} records
+                        <Text style={styles.exportDetailLabel}>{t('export.transactions')}: </Text>
+                        {stats.totalTransactions} {t('export.records')}
                       </Text>
                     </View>
                     
                     <View style={styles.exportDetailRow}>
                       <Ionicons name="calendar-outline" size={20} color="#666" />
                       <Text style={styles.exportDetailText}>
-                        <Text style={styles.exportDetailLabel}>Date Range: </Text>
-                        {dateUtils.formatDateShort(dateRange.startDate)} - {dateUtils.formatDateShort(dateRange.endDate)}
+                        <Text style={styles.exportDetailLabel}>{t('export.date_range')}: </Text>
+                        {dateUtils.formatDateShort(dateRange.startDate, i18n.language)} - {dateUtils.formatDateShort(dateRange.endDate, i18n.language)}
                       </Text>
                     </View>
                     
                     <View style={styles.exportDetailRow}>
                       <Ionicons name="folder-outline" size={20} color="#666" />
                       <Text style={styles.exportDetailText}>
-                        <Text style={styles.exportDetailLabel}>Location: </Text>
+                        <Text style={styles.exportDetailLabel}>{t('export.location')}: </Text>
                         {selectedDirectory}
                       </Text>
                     </View>
@@ -505,7 +507,7 @@ export default function ExportRecord() {
                     <View style={styles.exportDetailRow}>
                       <Ionicons name="trending-up-outline" size={20} color="#28a745" />
                       <Text style={styles.exportDetailText}>
-                        <Text style={styles.exportDetailLabel}>Total Income: </Text>
+                        <Text style={styles.exportDetailLabel}>{t('export.total_income')}: </Text>
                         {uangUtils.formatAmount(stats.totalIncome, mataUang)}
                       </Text>
                     </View>
@@ -513,14 +515,14 @@ export default function ExportRecord() {
                     <View style={styles.exportDetailRow}>
                       <Ionicons name="trending-down-outline" size={20} color="#dc3545" />
                       <Text style={styles.exportDetailText}>
-                        <Text style={styles.exportDetailLabel}>Total Expenses: </Text>
+                        <Text style={styles.exportDetailLabel}>{t('export.total_expenses')}: </Text>
                         {uangUtils.formatAmount(stats.totalExpenses, mataUang)}
                       </Text>
                     </View>
                   </View>
                   
-                                  <Text style={styles.confirmationText}>
-                    The CSV file will be created and shared via your device&apos;s share options.
+                  <Text style={styles.confirmationText}>
+                    {t('export.csv_file_message')}
                   </Text>
                   
                   <View style={styles.confirmationButtons}>
@@ -529,14 +531,14 @@ export default function ExportRecord() {
                       onPress={() => setExportModalVisible(false)}
                     >
                       <Ionicons name="close-outline" size={20} color="#666" style={styles.buttonIcon} />
-                      <Text style={styles.cancelButtonText}>Cancel</Text>
+                      <Text style={styles.cancelButtonText}>{t('export.cancel')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={styles.confirmButton} 
                       onPress={exportToCSV}
                     >
                       <Ionicons name="download-outline" size={20} color="#fff" style={styles.buttonIcon} />
-                      <Text style={styles.confirmButtonText}>Export</Text>
+                      <Text style={styles.confirmButtonText}>{t('export.export')}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -718,7 +720,6 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },

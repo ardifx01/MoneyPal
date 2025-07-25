@@ -3,11 +3,12 @@ import { useKategori } from '@/hooks/useCategory';
 import { useMataUang } from '@/hooks/usePreference';
 import { useTransactions } from '@/hooks/useTransactions';
 import { Category } from '@/types/types';
-import { expenseCategories } from '@/utils/categories';
+import { expenseCategories, TranslateKategori } from '@/utils/categories';
 import { dateUtils } from '@/utils/dateUtils';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Calculator from '../components/Calculator';
 import FancyLoader from '../components/FancyLoader';
@@ -25,10 +26,11 @@ export default function Budget() {
   const [showCalc, setShowCalc] = useState(false);
   const [setAsDefault, setSetAsDefault] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation();
 
   // Helper to format month string
-  function formatMonth(date: Date) {
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  function formatMonth(date: Date, bahasa: string) {
+    return date.toLocaleDateString(bahasa, { month: 'long', year: 'numeric' });
   }
 
   // Change month
@@ -101,7 +103,7 @@ export default function Budget() {
   // Handle edit (show calculator)
   const handleEdit = (categoryId: string) => {
     const isOverall = categoryId === 'all';
-    const cat = isOverall ? { name: 'Overall Limit' } : allExpenseCategories.find(c => c.id === categoryId);
+    const cat = isOverall ? { name: t('Overall Limit') } : allExpenseCategories.find(c => c.id === categoryId);
 
     setSetAsDefault(budgetData.default[categoryId] !== undefined)
     setEditModal({
@@ -140,14 +142,14 @@ export default function Budget() {
   return (
     <LinearGradient colors={["#f8f9fa", "#e3f2fd", "#f8f9fa"]} style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
-        <HeaderAplikasi subtitle="Monthly Budget" pageUtama={true} icon="wallet-outline" />
+        <HeaderAplikasi subtitle={t('Monthly Budget')} pageUtama={true} icon="wallet-outline" />
         <View style={styles.headerSpacer} />
         {/* Month Selector */}
         <View style={styles.monthNavBar}>
           <TouchableOpacity style={styles.arrowButton} onPress={() => changeMonth(-1)}>
             <Ionicons name="chevron-back" size={28} color="#007bff" />
           </TouchableOpacity>
-          <Text style={styles.monthNavText}>{formatMonth(selectedDate)}</Text>
+          <Text style={styles.monthNavText}>{formatMonth(selectedDate, i18n.language)}</Text>
           <TouchableOpacity style={styles.arrowButton} onPress={() => changeMonth(1)}>
             <Ionicons name="chevron-forward" size={28} color="#007bff" />
           </TouchableOpacity>
@@ -158,28 +160,28 @@ export default function Budget() {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* Overall budget */}
           <View style={styles.overallBudgetBox}>
-            <Text style={styles.sectionLabel}>Overall Limit</Text>
+            <Text style={styles.sectionLabel}>{t('Overall Limit')}</Text>
             <View style={styles.limitRow}>
               <Text style={styles.limitAmount}>{mataUang.symbol}{getLimit('all').toLocaleString()}</Text>
               <TouchableOpacity style={styles.editBtn} onPress={() => handleEdit('all')}>
-                <Text style={styles.editBtnText}>Edit</Text>
+                <Text style={styles.editBtnText}>{t('Edit')}</Text>
               </TouchableOpacity>
             </View>
             {getLimit('all') > 0 && (
               <>
                 <View style={styles.progressRow}>
-                  <Text style={styles.progressText}>Spent: {mataUang.symbol}{spentOverall.toLocaleString()} ({Math.round((spentOverall / getLimit('all')) * 100)}%)</Text>
+                  <Text style={styles.progressText}>{t('Spent')}: {mataUang.symbol}{spentOverall.toLocaleString()} ({Math.round((spentOverall / getLimit('all')) * 100)}%)</Text>
                 </View>
                 <ProgressBar percent={spentOverall / getLimit('all') * 100} color={spentOverall >= getLimit('all') ? '#ff3b30' : '#007bff'} />
                 {spentOverall >= getLimit('all') && (
-                  <Text style={styles.limitReachedText}>Amount has reached the limit</Text>
+                  <Text style={styles.limitReachedText}>{t('Amount has reached the limit')}</Text>
                 )}
               </>
             )}
           </View>
 
           {/* Per-category budgets */}
-          <Text style={styles.sectionLabel}>Per-Category Limits</Text>
+          <Text style={styles.sectionLabel}>{t('Per-Category Limits')}</Text>
           {allExpenseCategories.map((cat: Category) => {
             const limit = getLimit(cat.id);
             const spent = spentByCategory[cat.id] || 0;
@@ -190,16 +192,16 @@ export default function Budget() {
                   <Text style={styles.categoryIconText}>{cat.icon}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.categoryName}>{cat.name}</Text>
+                  <Text style={styles.categoryName}>{TranslateKategori[i18n.language][cat.id] ? TranslateKategori[i18n.language][cat.id] : cat.name}</Text>
                   {limit > 0 && (
                     <>
                       <View style={styles.progressRow}>
-                        <Text style={styles.progressText}>Spent: {mataUang.symbol}{spent.toLocaleString()} ({Math.round(percent)}%)</Text>
+                        <Text style={styles.progressText}>{t('Spent')}: {mataUang.symbol}{spent.toLocaleString()} ({Math.round(percent)}%)</Text>
                       </View>
                       <ProgressBar percent={percent} color={cat.color} />
-                      <Text style={styles.limitAmountSmallBelow}>Limit: {mataUang.symbol}{limit.toLocaleString()}</Text>
+                      <Text style={styles.limitAmountSmallBelow}>{t('Limit')}: {mataUang.symbol}{limit.toLocaleString()}</Text>
                       {spent >= limit && (
-                        <Text style={styles.limitReachedText}>Amount has reached the limit</Text>
+                        <Text style={styles.limitReachedText}>{t('Amount has reached the limit')}</Text>
                       )}
                     </>
                   )}
@@ -230,12 +232,12 @@ export default function Budget() {
         >
           <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setEditModal(null)}>
             <Pressable style={styles.editModalBox} onPress={e => e.stopPropagation()}>
-              <Text style={styles.editModalTitle}>Edit Budget: {editModal?.name}</Text>
+              <Text style={styles.editModalTitle}>{t('Edit Budget')}: {editModal?.name}</Text>
               <Pressable
                 style={styles.editInputBox}
                 onPress={() => setShowCalc(true)}
               >
-                <Text style={styles.editInputText}>{editValue ? mataUang.symbol + parseFloat(editValue).toLocaleString() : 'Tap to enter amount'}</Text>
+                <Text style={styles.editInputText}>{editValue ? mataUang.symbol + parseFloat(editValue).toLocaleString() : t('Tap to enter amount')}</Text>
               </Pressable>
               <View style={styles.checkboxRow}>
                 <TouchableOpacity
@@ -244,18 +246,18 @@ export default function Budget() {
                 >
                   {setAsDefault && <View style={styles.checkboxInner} />}
                 </TouchableOpacity>
-                <Text style={styles.checkboxLabel}>Set as default for future months</Text>
+                <Text style={styles.checkboxLabel}>{t('Set as default for future months')}</Text>
               </View>
               <View style={styles.editModalBtnRow}>
                 <TouchableOpacity style={styles.editModalBtnCancel} onPress={() => setEditModal(null)}>
-                  <Text style={styles.editModalBtnTextCancel}>Cancel</Text>
+                  <Text style={styles.editModalBtnTextCancel}>{t('Cancel')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.editModalBtnSave}
                   onPress={handleEditModalSave}
                   disabled={!editValue || isNaN(parseFloat(editValue)) || parseFloat(editValue) < 0}
                 >
-                  <Text style={styles.editModalBtnTextSave}>Save</Text>
+                  <Text style={styles.editModalBtnTextSave}>{t('Save')}</Text>
                 </TouchableOpacity>
               </View>
             </Pressable>

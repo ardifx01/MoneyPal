@@ -3,13 +3,15 @@ import { useMataUang } from '@/hooks/usePreference';
 import { useTransactions } from '@/hooks/useTransactions';
 import { uangUtils } from '@/utils/preferences';
 import { Ionicons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
 import LineChart from 'react-native-simple-line-chart';
 import { Transaction } from '../../types/types';
-import { getCategoryById } from '../../utils/categories';
+import { getCategoryById, TranslateKategori } from '../../utils/categories';
 import BalanceCalendar from '../components/BalanceCalendar';
 import FancyLoader from '../components/FancyLoader';
 import HeaderAplikasi from '../components/HeaderAplikasi';
@@ -18,9 +20,9 @@ const screenWidth = Dimensions.get('window').width;
 const SUMMARY_MODES = ['month', 'year', 'all'] as const;
 type SummaryMode = typeof SUMMARY_MODES[number];
 
-function formatAnalysisDate(date: Date, mode: SummaryMode): string {
+function formatAnalysisDate(date: Date, mode: SummaryMode, bahasa: string): string {
   if (mode === 'month') {
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return date.toLocaleDateString(bahasa, { month: 'long', year: 'numeric' });
   } else if (mode === 'year') {
     return date.getFullYear().toString();
   } else {
@@ -88,7 +90,9 @@ export default function AnalysisScreen() {
   const [summaryMode, setSummaryMode] = useState<SummaryMode>('month');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPieIndex, setSelectedPieIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     (async () => {
@@ -99,10 +103,12 @@ export default function AnalysisScreen() {
   }, []);
   
   useEffect(() => {
-    preparePieData(transactions);
-    prepareLineData(transactions);
-    if (loading) setLoading(false);
-  }, [transactions, summaryMode, selectedDate]);
+    if (isFocused) {
+      preparePieData(transactions);
+      prepareLineData(transactions);
+      if (loading) setLoading(false);
+    }
+  }, [transactions, summaryMode, selectedDate, isFocused]);
 
   // Pie chart: expense by category (filtered)
   const preparePieData = (all: Transaction[]) => {
@@ -130,9 +136,9 @@ export default function AnalysisScreen() {
       const catObj = getCategoryById(cat, 'expense', kategori.filter((v) => v.type === 'expense')) ?? getCategoryById("other_expense", "expense");
       return {
         value: value,
-        text: catObj ? catObj.name : cat,
+        text: catObj ? TranslateKategori[i18n.language][catObj.id] ? TranslateKategori[i18n.language][catObj.id] : catObj.name : cat,
         color: catObj ? catObj.color : '#ccc',
-        category: catObj ? catObj.name : cat,
+        // category: catObj ? TranslateKategori[i18n.language][catObj.id] ? TranslateKategori[i18n.language][catObj.id] : catObj.name : cat,
       };
     });
     setPieData(pie.sort((a, b) => b.value - a.value));
@@ -150,24 +156,26 @@ export default function AnalysisScreen() {
 
       for (let d = 1; d <= daysInMonth; d++) {
         const tanggal = new Date(year, month, d)
-        const bulan = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(tanggal);
+        const bulan = new Intl.DateTimeFormat(i18n.language, { month: 'long' }).format(tanggal);
 
-        let suffix;
-        if (d > 3 && d < 21) {
-          suffix = 'th';
-        } else {
-          switch (d % 10) {
-            case 1:
-              suffix = 'st';
-              break;
-            case 2:
-              suffix = 'nd';
-              break;
-            case 3:
-              suffix = 'rd';
-              break;
-            default:
-              suffix = 'th';
+        let suffix = "";
+        if(i18n.language === "en") {
+          if (d > 3 && d < 21) {
+            suffix = 'th';
+          } else {
+            switch (d % 10) {
+              case 1:
+                suffix = 'st';
+                break;
+              case 2:
+                suffix = 'nd';
+                break;
+              case 3:
+                suffix = 'rd';
+                break;
+              default:
+                suffix = 'th';
+            }
           }
         }
 
@@ -185,7 +193,7 @@ export default function AnalysisScreen() {
       const data: number[] = [];
       for (let m = 0; m < 12; m++) {
         const d = new Date(year, m, 1);
-        const label = d.toLocaleDateString('en-US', { month: 'short' }) + ' ' + d.getFullYear().toString().slice(-2);
+        const label = d.toLocaleDateString(i18n.language, { month: 'short' }) + ' ' + d.getFullYear().toString().slice(-2);
         labels.push(label);
         const monthStr = `${year}-${String(m + 1).padStart(2, '0')}`;
         const total = all.filter(t => t.type === 'expense' && t.date.startsWith(monthStr)).reduce((sum, t) => sum + t.amount, 0);
@@ -199,7 +207,7 @@ export default function AnalysisScreen() {
       const data: number[] = [];
       for (let i = 12; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const label = d.toLocaleDateString('en-US', { month: 'short' }) + ' ' + d.getFullYear().toString().slice(-2);
+        const label = d.toLocaleDateString(i18n.language, { month: 'short' }) + ' ' + d.getFullYear().toString().slice(-2);
         months.push(label);
         const monthStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         const total = all.filter(t => t.type === 'expense' && t.date.startsWith(monthStr)).reduce((sum, t) => sum + t.amount, 0);
@@ -221,7 +229,7 @@ export default function AnalysisScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* Fancy Header */}
-          <HeaderAplikasi subtitle='Expense Analysis' pageUtama={true} icon='' />
+          <HeaderAplikasi subtitle={t('expense_analysis')} pageUtama={true} icon='' />
           {/* Fancy Summary Mode Row */}
           <View style={styles.fancySummaryModeRow}>
             {SUMMARY_MODES.map(mode => (
@@ -230,7 +238,7 @@ export default function AnalysisScreen() {
                 mode={mode}
                 isActive={summaryMode === mode}
                 onPress={() => { if (summaryMode !== mode) { setLoading(true); setSummaryMode(mode); } }}
-                label={mode === 'month' ? 'Month' : mode === 'year' ? 'Year' : 'All Time'}
+                label={mode === 'month' ? t('month') : mode === 'year' ? t('year') : t('all_time')}
               />
             ))}
           </View>
@@ -243,7 +251,7 @@ export default function AnalysisScreen() {
               >
                 <Ionicons name="chevron-back" size={28} color="#007bff" />
               </TouchableOpacity>
-              <Text style={styles.dateNavText}>{formatAnalysisDate(selectedDate, summaryMode)}</Text>
+              <Text style={styles.dateNavText}>{formatAnalysisDate(selectedDate, summaryMode, i18n.language)}</Text>
               <TouchableOpacity
                 style={styles.arrowButton}
                 onPress={() => { setLoading(true); setSelectedDate(addToDate(selectedDate, summaryMode, 1)); }}
@@ -261,7 +269,7 @@ export default function AnalysisScreen() {
             <>
               {/* Pie Chart Card */}
               <View style={styles.card}>
-                <Text style={styles.sectionTitle}>By Category ({formatAnalysisDate(selectedDate, summaryMode)})</Text>
+                <Text style={styles.sectionTitle}>{t('by_category')} ({formatAnalysisDate(selectedDate, summaryMode, i18n.language)})</Text>
                 {pieData.length > 0 ? (
                   <>
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -301,7 +309,7 @@ export default function AnalysisScreen() {
                                 {Math.round((pieData[selectedPieIndex].value / totalPie) * 100)}%
                               </Text>
                             </View>
-                          ) : <Text style={{ alignItems: "center", fontWeight: 'bold', textAlign: 'center' }}>Expenses</Text>
+                          ) : <Text style={{ alignItems: "center", fontWeight: 'bold', textAlign: 'center' }}>{t('expenses')}</Text>
                         }
                       />
                     </View>
@@ -327,17 +335,17 @@ export default function AnalysisScreen() {
                     </View>
                   </>
                 ) : (
-                  <Text style={styles.emptyText}>No expense data for pie chart.</Text>
+                  <Text style={styles.emptyText}>{t('no_expense_data_for_pie_chart')}</Text>
                 )}
               </View>
               {/* Line Chart Card */}
               <View style={styles.card}>
                 <Text style={styles.sectionTitle}>
                   {summaryMode === 'month'
-                    ? `Spending Over Time\n(Days in ${formatAnalysisDate(selectedDate, 'month')})`
+                    ? `${t('spending_over_time')}\n(${t('days_in')}${formatAnalysisDate(selectedDate, 'month', i18n.language)})`
                     : summaryMode === 'year'
-                    ? `Spending Over Time\n(Months in ${formatAnalysisDate(selectedDate, 'year')})`
-                    : 'Spending Over Time\n(Last 12 Months)'}
+                    ? `${t('spending_over_time')}\n(${t('months_in')}${formatAnalysisDate(selectedDate, 'year', i18n.language)})`
+                    : `${t('spending_over_time')}\n(${t('last_12_months')})`}
                 </Text>
                 {lineData.data.length > 0 ? (
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
@@ -433,7 +441,7 @@ export default function AnalysisScreen() {
                     </View>
                   </View>
                 ) : (
-                  <Text style={styles.emptyText}>No expense data for line chart.</Text>
+                  <Text style={styles.emptyText}>{t('no_expense_data_for_line_chart')}</Text>
                 )}
               </View>
               

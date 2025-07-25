@@ -37,7 +37,6 @@ export async function scheduleDailyReminder(hour: number, minute: number) {
 
     const channelId = await createChannel();
   
-    console.log(trigger, triggerDate);
     // await notifee.displayNotification({
     //     title: '💸 Track your expenses!',
     //     body: 'Open MoneyPal and add your daily transactions!',

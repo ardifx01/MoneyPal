@@ -2,6 +2,7 @@ import { useKategori } from '@/hooks/useCategory';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Animated,
     FlatList,
@@ -98,6 +99,7 @@ export default function CategoryPicker({
     selectedCategory,
 }: CategoryPickerProps) {
     const { kategori, dapat } = useKategori();
+    const { t } = useTranslation();
 
     useEffect(() => {
         dapat();
@@ -134,24 +136,24 @@ export default function CategoryPicker({
             <LinearGradient
                 colors={["#f8f9fa", "#e3f2fd", "#f8f9fa"]}
                 style={styles.gradientBg}
-        >
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Select Category</Text>
-                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                        <Text style={styles.closeText}>×</Text>
-                    </TouchableOpacity>
-                </View>
+            >
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <Text style={styles.title}>{t('category_picker.select_category')}</Text>
+                        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                            <Text style={styles.closeText}>×</Text>
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.divider} />
-                <FlatList
-                    data={categories}
-                    renderItem={renderCategoryItem}
-                    keyExtractor={(item) => item.id}
-                    numColumns={2}
-                    contentContainerStyle={styles.list}
-                    showsVerticalScrollIndicator={false}
-                />
-            </View>
+                    <FlatList
+                        data={categories}
+                        renderItem={renderCategoryItem}
+                        keyExtractor={(item) => item.id}
+                        numColumns={2}
+                        contentContainerStyle={styles.list}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </View>
             </LinearGradient>
         </Modal>
     );

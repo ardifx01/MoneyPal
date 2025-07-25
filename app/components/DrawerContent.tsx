@@ -2,6 +2,7 @@ import { lightTheme as theme } from '@/utils/themes';
 import { Ionicons } from '@expo/vector-icons';
 import { Router } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, InteractionManager, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface DrawerContentProps {
@@ -10,7 +11,7 @@ interface DrawerContentProps {
   router: Router
 }
 
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.yourapp.package'; // Replace with your app's Play Store URL
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.anonymous.MoneyPal'; // Replace with your app's Play Store URL
 
 const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpenses }) => { 
   const KePage = (arah: string) => {
@@ -20,6 +21,8 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
     })
   }
   
+  const { t } = useTranslation();
+
   return (
     <View style={[styles.container, { backgroundColor: theme.card }]}> 
       {/* Header Section */}
@@ -33,7 +36,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
           </View>
         </View>
         <Text style={[styles.appTitle, { color: theme.textColorInBackground }]}>MoneyPal</Text>
-        <Text style={[styles.appSubtitle, { color: theme.lightTextSecondary }]}>Smart Expense Tracker</Text>
+        <Text style={[styles.appSubtitle, { color: theme.lightTextSecondary }]}>{t('drawer.smart_expense_tracker')}</Text>
       </View>
 
       {/* Divider */}
@@ -41,13 +44,13 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
 
       {/* Menu Items */}
       <View style={styles.menuSection}>
-        <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>Main Menu</Text>
+        <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>{t('drawer.main_menu')}</Text>
         
         <TouchableOpacity style={[styles.menuItem, { backgroundColor: theme.card }]} onPress={() => KePage('preferences')}>
           <View style={[styles.iconContainer, { backgroundColor: theme.bar }]}> 
             <Ionicons name="settings-outline" size={20} color={theme.primary} />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Preference</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.preference')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
 
@@ -55,7 +58,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
           <View style={[styles.iconContainer, { backgroundColor: '#ffebee' }]}> 
             <Ionicons name="trash-outline" size={20} color="#dc3545" />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Reset Records</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.reset_records')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
 
@@ -63,7 +66,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
           <View style={[styles.iconContainer, { backgroundColor: '#e8f5e8' }]}> 
             <Ionicons name="download-outline" size={20} color="#28a745" />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Export Records</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.export_records')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
 
@@ -72,7 +75,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
           <View style={[styles.iconContainer, { backgroundColor: '#e3fcec' }]}> 
             <Ionicons name="cloud-upload-outline" size={20} color="#00b894" />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Backup</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.backup')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
 
@@ -81,7 +84,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
           <View style={[styles.iconContainer, { backgroundColor: '#e3f0fc' }]}> 
             <Ionicons name="cloud-download-outline" size={20} color="#0984e3" />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Restore</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.restore')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
       </View>
@@ -91,13 +94,13 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
 
       {/* Support Section */}
       <View style={styles.menuSection}>
-        <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>Support</Text>
+        <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>{t('drawer.support')}</Text>
         
         <TouchableOpacity style={[styles.menuItem, { backgroundColor: theme.card }]} onPress={() => Linking.openURL(PLAY_STORE_URL)}>
           <View style={[styles.iconContainer, { backgroundColor: '#fce4ec' }]}> 
             <Ionicons name="heart-outline" size={20} color="#ff4081" />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Rate App</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.rate_app')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
 
@@ -106,7 +109,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ navigation, onResetExpens
           <View style={[styles.iconContainer, { backgroundColor: '#e0f7fa' }]}> 
             <Ionicons name="star-outline" size={20} color="#00bcd4" />
           </View>
-          <Text style={[styles.menuItemText, { color: theme.text }]}>Support</Text>
+          <Text style={[styles.menuItemText, { color: theme.text }]}>{t('drawer.support')}</Text>
           <Ionicons name="chevron-forward" size={16} color={theme.divider} />
         </TouchableOpacity>
       </View>

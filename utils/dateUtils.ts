@@ -12,24 +12,24 @@ export const dateUtils = {
   },
 
   // Format date for display (e.g., "Monday, January 1, 2024")
-  formatDateForDisplay(date: Date): string {
+  formatDateForDisplay(date: Date, bahasa: string): string {
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     };
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString(bahasa, options);
   },
 
   // Format date for short display (e.g., "Jan 1, 2024")
-  formatDateShort(date: Date): string {
+  formatDateShort(date: Date, bahasa: string): string {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     };
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString(bahasa, options);
   },
 
   // Parse date string to Date object

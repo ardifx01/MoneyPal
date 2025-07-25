@@ -2,10 +2,13 @@ import { lightTheme as theme } from '@/utils/themes';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Layout = () => {
     const insets = useSafeAreaInsets();
+
+    const { t } = useTranslation();
 
     return (
         <Tabs
@@ -31,10 +34,10 @@ const Layout = () => {
                 },
             })}
         >
-            <Tabs.Screen name="index" options={{ title: 'Home' }} />
-            <Tabs.Screen name="analysis" options={{ title: 'Analysis' }} />
-            <Tabs.Screen name="budget" options={{ title: 'Budgets' }} />
-            <Tabs.Screen name="categories" options={{ title: 'Categories' }} />
+            <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />
+            <Tabs.Screen name="analysis" options={{ title: t('tabs.analysis') }} />
+            <Tabs.Screen name="budget" options={{ title: t('tabs.budgets') }} />
+            <Tabs.Screen name="categories" options={{ title: t('tabs.categories') }} />
             {/* <Tabs.Screen name="preferences" options={{
                 title: 'Preferences',
                 tabBarIcon: ({ color, size }) => (

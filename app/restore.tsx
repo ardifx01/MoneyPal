@@ -9,6 +9,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { Category, MataUang, TipeBudget, Transaction } from '@/types/types';
 import { Ionicons } from '@expo/vector-icons';
 import { types as DocumentPickerTypes, pick } from '@react-native-documents/picker';
+import { useTranslation } from 'react-i18next';
 import RNFS from 'react-native-fs';
 import HeaderAplikasi from './components/HeaderAplikasi';
 
@@ -20,6 +21,7 @@ export default function Restore() {
   const { simpan: simpanKategori, hapusSemua: hapusSemuaKategori } = useKategori();
   const [isRestoring, setIsRestoring] = useState(false);
   const [parsedData, setParsedData] = useState<{ transactions: Transaction[], categories: Category[], images: Record<string, string>, budget: TipeBudget, preference: { mataUang: MataUang, notifikasi: { opsi: boolean, waktu: { hour: number, minute: number } } }, backupCreatedAt: string, version: number} | null>(null);
+  const { t } = useTranslation();
 
   const handlePickFile = async () => {
     try {
@@ -31,20 +33,20 @@ export default function Restore() {
       try {
         data = JSON.parse(fileContent);
       } catch (e) {
-        Alert.alert('Invalid File', 'The selected file is not a valid JSON backup.');
+        Alert.alert(t('restore.invalid_file_title'), t('restore.invalid_file_desc'));
         return;
       }
       // Validate structure
       if (!data.transactions || !data.categories || !data.images || !data.version) {
-        Alert.alert('Invalid Backup', 'The selected file is not a valid MoneyPal backup.');
+        Alert.alert(t('restore.invalid_backup_title'), t('restore.invalid_backup_desc'));
         return;
       }
 
       setParsedData(data);
-      Alert.alert('Backup Loaded', 'Backup file loaded and ready to restore.');
+      Alert.alert(t('restore.loaded_title'), t('restore.loaded_desc'));
     } catch (e: any) {
         console.log(e, "ERROR SAAT PICKING FILE");
-        Alert.alert('Error', 'Failed to pick file.');
+        Alert.alert(t('restore.error_title'), t('restore.error_desc'));
     }
   };
 
@@ -79,10 +81,10 @@ export default function Restore() {
         }
         await tambahTransaction(newT);
       }
-      Alert.alert('Restore Successful', 'All data has been restored!');
+      Alert.alert(t('restore.restore_successful_title'), t('restore.restore_successful_desc'));
       setParsedData(null);
     } catch (e: any) {
-      Alert.alert('Restore Failed', `Could not restore data. Please try again. ${e}`);
+      Alert.alert(t('restore.restore_failed_title'), `${t('restore.restore_failed_desc')} ${e}`);
     } finally {
       setIsRestoring(false);
     }
@@ -92,16 +94,16 @@ export default function Restore() {
     <LinearGradient colors={["#f8f9fa", "#e3f2fd", "#f8f9fa"]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header with Back Button */}
-        <HeaderAplikasi subtitle='Restore Data' pageUtama={false} icon='cloud-download-outline' />
+        <HeaderAplikasi subtitle={t('restore.restore_data')} pageUtama={false} icon='cloud-download-outline' />
 
         <View style={styles.centered}>
           <View style={styles.card}>
             <View style={styles.iconCircle}>
               <Ionicons name="cloud-download-outline" size={44} color="#0984e3" />
             </View>
-            <Text style={styles.title}>Restore Your Data</Text>
+            <Text style={styles.title}>{t('restore.restore_your_data')}</Text>
             <Text style={styles.desc}>
-              Select a backup file to restore all your transactions, custom categories, and images. Only valid MoneyPal backup files are accepted.
+              {t('restore.restore_desc')}
             </Text>
             <TouchableOpacity
               style={styles.button}
@@ -109,23 +111,23 @@ export default function Restore() {
               disabled={isRestoring}
             >
               <Ionicons name="folder-open-outline" size={22} color="#fff" />
-              <Text style={styles.buttonText}>Choose Backup File</Text>
+              <Text style={styles.buttonText}>{t('restore.choose_backup_file')}</Text>
             </TouchableOpacity>
             {parsedData && (
               <View style={styles.summaryBox}>
-                <Text style={styles.summaryTitle}>Backup Summary</Text>
-                <Text style={styles.summaryText}>Total Transactions: {parsedData.transactions.length}</Text>
-                <Text style={styles.summaryText}>Categories: {parsedData.categories.length}</Text>
-                <Text style={styles.summaryText}>Total Budgets: {Object.keys(parsedData.budget.budget).length}</Text>
-                <Text style={styles.summaryText}>Images: {Object.keys(parsedData.images).length}</Text>
-                <Text style={styles.summaryText}>Currency: {parsedData.preference.mataUang.name ?? "US Dollar"}</Text>
+                <Text style={styles.summaryTitle}>{t('restore.backup_summary')}</Text>
+                <Text style={styles.summaryText}>{t('restore.total_transactions')}: {parsedData.transactions.length}</Text>
+                <Text style={styles.summaryText}>{t('restore.categories')}: {parsedData.categories.length}</Text>
+                <Text style={styles.summaryText}>{t('restore.total_budgets')}: {Object.keys(parsedData.budget.budget).length}</Text>
+                <Text style={styles.summaryText}>{t('restore.images')}: {Object.keys(parsedData.images).length}</Text>
+                <Text style={styles.summaryText}>{t('restore.currency')}: {parsedData.preference.mataUang.name ?? "US Dollar"}</Text>
                 <TouchableOpacity
                   style={[styles.button, isRestoring && styles.buttonDisabled, { marginTop: 18 }]}
                   onPress={handleRestore}
                   disabled={isRestoring}
                 >
                   <Ionicons name={isRestoring ? 'hourglass-outline' : 'cloud-download-outline'} size={22} color="#fff" />
-                  <Text style={styles.buttonText}>{isRestoring ? 'Restoring...' : 'Restore Now'}</Text>
+                  <Text style={styles.buttonText}>{isRestoring ? t('restore.restoring') : t('restore.restore_now')}</Text>
                 </TouchableOpacity>
               </View>
             )}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Animated,
   Dimensions,
@@ -36,6 +37,7 @@ export default function Calculator({ visible, onClose, onConfirm, initialValue =
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [isOverLimit, setIsOverLimit] = useState(false);
   const blinkAnimation = useRef(new Animated.Value(1)).current;
+  const { t } = useTranslation();
 
   useEffect(() => {
     if(visible) {
@@ -194,12 +196,29 @@ export default function Calculator({ visible, onClose, onConfirm, initialValue =
       setDisplay(newDisplay);
       setHasDecimal(newDisplay.includes('.'));
       setIsOverLimit(false);
+    } else {
+      setDisplay("0");
     }
   };
 
-  const handleConfirm = () => {
-    if (display && parseFloat(display) >= 0) {
-      onConfirm(display);
+  const handleConfirm = () => {    
+    let valueToConfirm = display;
+    if (operation && previousValue !== '') {
+      // Perform pending calculation
+      const inputValue = parseFloat(display);
+      const currentValue = parseFloat(previousValue);
+      const newValue = performCalculation(currentValue, inputValue, operation);
+      const limitedValue = limitToTenDigits(String(newValue));
+      setDisplay(limitedValue);
+      valueToConfirm = limitedValue;
+      setPreviousValue('');
+      setOperation('');
+      setWaitingForOperand(false);
+      setHasDecimal(limitedValue.includes('.'));
+      setIsOverLimit(countDigits(limitedValue) > 10);
+    }
+    if (valueToConfirm && parseFloat(valueToConfirm) >= 0) {
+      onConfirm(valueToConfirm);
       handleClose();
     }
   };
@@ -311,10 +330,10 @@ export default function Calculator({ visible, onClose, onConfirm, initialValue =
           {/* Action Buttons */}
           <View style={styles.actionRow}>
             <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
-              <Text style={styles.clearButtonText}>Clear</Text>
+              <Text style={styles.clearButtonText}>{t('calculator.clear')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-              <Text style={styles.confirmButtonText}>Confirm</Text>
+              <Text style={styles.confirmButtonText}>{t('calculator.confirm')}</Text>
             </TouchableOpacity>
           </View>
         </View>

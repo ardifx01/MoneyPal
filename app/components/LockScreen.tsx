@@ -1,5 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LockScreen({ onUnlock, pinAsli }: { onUnlock: () => void, pinAsli: string }) {
@@ -51,6 +52,8 @@ export default function LockScreen({ onUnlock, pinAsli }: { onUnlock: () => void
     setError(false);
   };
 
+  const { t } = useTranslation();
+
   return (
     <LinearGradient
       colors={["#2480ea", "#2480ea", "#5abce0"]}
@@ -64,9 +67,8 @@ export default function LockScreen({ onUnlock, pinAsli }: { onUnlock: () => void
             resizeMode="contain"
           />
         </View>
-
-        <Text style={styles.title}>Enter PIN</Text>
-        <Text style={styles.subtitle}>Please enter your 4-digit PIN</Text>
+        <Text style={styles.title}>{t('lockscreen.enter_pin')}</Text>
+        <Text style={styles.subtitle}>{t('lockscreen.enter_pin_desc')}</Text>
         
         <Animated.View 
           style={[styles.pinContainer, { opacity: fadeAnim }]}
@@ -89,7 +91,7 @@ export default function LockScreen({ onUnlock, pinAsli }: { onUnlock: () => void
 
         <View style={styles.errorContainer}>
           {error && (
-            <Text style={styles.errorText}>Incorrect PIN. Try again.</Text>
+            <Text style={styles.errorText}>{t('lockscreen.incorrect_pin')}</Text>
           )}
         </View>
 

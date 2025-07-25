@@ -3,7 +3,9 @@ import { storageUtils } from '@/utils/storage';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
+import '../utils/i18n';
 import DrawerContent from './components/DrawerContent';
 import LockScreen from './components/LockScreen';
 
@@ -24,7 +26,8 @@ function TabsStack() {
 export default function RootLayout() {
     const { hapusSemua } = useTransactions();
     const router = useRouter();
-
+    const { t } = useTranslation();
+    
     const [pinAsli, setPin] = React.useState("");
     const [isUnlocked, setIsUnlocked] = React.useState(true);
 
@@ -38,9 +41,9 @@ export default function RootLayout() {
 
     // Handler for resetting expenses
     const handleResetExpenses = () => {
-        Alert.alert('Reset Expenses', 'This will clear all your expenses. Are you sure?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Reset', style: 'destructive', onPress: () => {
+        Alert.alert(t('reset_expenses.title'), t('reset_expenses.message'), [
+            { text: t('reset_expenses.cancel'), style: 'cancel' },
+            { text: t('reset_expenses.reset'), style: 'destructive', onPress: () => {
                 hapusSemua();
             } },
         ]);

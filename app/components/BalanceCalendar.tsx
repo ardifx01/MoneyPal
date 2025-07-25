@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { MataUang, Transaction } from '../../types/types';
 
@@ -16,6 +17,7 @@ export default function BalanceCalendar({
 }: BalanceCalendarProps) {
   const currentMonth = selectedDate.getMonth();
   const currentYear = selectedDate.getFullYear();
+  const { t } = useTranslation();
 
   // Get calendar data for the current month
   const calendarData = useMemo(() => {
@@ -54,6 +56,7 @@ export default function BalanceCalendar({
   }, [transactions, currentMonth, currentYear]);
 
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDaysTranslated = weekDays.map(day => t(`week_days.${day}`));
 
   const formatBalance = (balance: number) => {
     if (balance === 0) return '';
@@ -76,11 +79,11 @@ export default function BalanceCalendar({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Monthly Balance Calendar</Text>
+      <Text style={styles.title}>{t('monthly_balance_calendar')}</Text>
       
       {/* Week day headers */}
       <View style={styles.weekHeader}>
-        {weekDays.map(day => (
+        {weekDaysTranslated.map(day => (
           <View key={day} style={styles.weekDayHeader}>
             <Text style={styles.weekDayText}>{day}</Text>
           </View>

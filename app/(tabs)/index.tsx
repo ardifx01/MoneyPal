@@ -9,6 +9,7 @@ import { FlashList } from "@shopify/flash-list";
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Alert,
     Platform,
@@ -33,23 +34,20 @@ import TransactionItem from '../components/TransactionItem';
 const SUMMARY_MODES = ['Day', 'Month', 'Year'] as const;
 type SummaryMode = typeof SUMMARY_MODES[number];
 
-function formatSummaryDate(date: Date, mode: SummaryMode): string {
+function formatSummaryDate(date: Date, mode: SummaryMode, bahasa: string): string {
     if (mode === 'Day') {
         // e.g., Monday, July 7th, 2025
-        const day = date.toLocaleDateString('en-US', { weekday: 'long' });
-        const month = date.toLocaleDateString('en-US', { month: 'long' });
-        const dayNum = date.getDate();
-        const year = date.getFullYear();
-        // Add ordinal suffix
-        const j = dayNum % 10, k = dayNum % 100;
-        let suffix = 'th';
-        if (j === 1 && k !== 11) suffix = 'st';
-        else if (j === 2 && k !== 12) suffix = 'nd';
-        else if (j === 3 && k !== 13) suffix = 'rd';
-        return `${day}, ${month} ${dayNum}${suffix}, ${year}`;
+        const options = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        };
+          
+        return date.toLocaleDateString(bahasa, options as any);
     } else if (mode === 'Month') {
         // e.g., July 2025
-        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        return date.toLocaleDateString(bahasa, { month: 'long', year: 'numeric' });
     } else {
         // e.g., 2025
         return date.getFullYear().toString();
@@ -246,16 +244,8 @@ export default function MoneyPal() {
             const groups: { [date: string]: Transaction[] } = {};
             transactionsDiTunjukan.forEach(t => {
                 const dateObj = dateUtils.parseDate(t.date);
-                const day = dateObj.getDate();
-                const month = dateObj.toLocaleDateString('en-US', { month: 'long' });
-                const year = dateObj.getFullYear();
-                // e.g., '1st July', '2nd July'
-                const j = day % 10, k = day % 100;
-                let suffix = 'th';
-                if (j === 1 && k !== 11) suffix = 'st';
-                else if (j === 2 && k !== 12) suffix = 'nd';
-                else if (j === 3 && k !== 13) suffix = 'rd';
-                const sectionTitle = `${day}${suffix} ${month}`;
+
+                const sectionTitle = dateObj.toLocaleDateString(i18n.language, { month: "long", day: "numeric" });
                 if (!groups[sectionTitle]) groups[sectionTitle] = [];
                 groups[sectionTitle].push(t);
             });
@@ -272,7 +262,7 @@ export default function MoneyPal() {
             const groups: { [month: string]: Transaction[] } = {};
             transactionsDiTunjukan.forEach(t => {
                 const dateObj = dateUtils.parseDate(t.date);
-                const month = dateObj.toLocaleDateString('en-US', { month: 'long' });
+                const month = dateObj.toLocaleDateString(i18n.language, { month: 'long' });
                 if (!groups[month]) groups[month] = [];
                 groups[month].push(t);
             });
@@ -340,12 +330,13 @@ export default function MoneyPal() {
         />
     }, [mataUang, theme, kategori, handleDeleteTransaction, handleEditTransaction]);
 
+    const { t, i18n } = useTranslation();
     const renderEmptyList = useCallback(() => (
         <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No transactions for this {summaryMode.toLowerCase()}</Text>
-            <Text style={styles.emptySubtext}>Tap the + button to add your first transaction</Text>
+            <Text style={styles.emptyText}>{t('no_transactions_for_this_summary_mode')}</Text>
+            <Text style={styles.emptySubtext}>{t('tap_add_button_to_add_first_transaction')}</Text>
         </View>
-    ), [summaryMode]);
+    ), [t]);
 
     // Optimized key extractor
     const keyExtractor = useCallback((item: Transaction) => item.id, []);
@@ -356,7 +347,7 @@ export default function MoneyPal() {
             {SUMMARY_MODES.map((mode) => (
                 <SummaryModeButton
                     key={mode}
-                    mode={mode}
+                    mode={t(`summary.${mode}`)}
                     theme={theme}
                     isActive={summaryMode === mode}
                     onPress={() => { if(summaryMode !== mode) { setLoading(true); setSummaryMode(mode) } }}
@@ -374,7 +365,7 @@ export default function MoneyPal() {
                 <StatusBar style="light" />
                 {/* Header with three-dot menu */}
                 <View onLayout={onHeaderLayout}>
-                    <HeaderAplikasi subtitle='Daily Expense Tracker' icon='' pageUtama={true} />
+                    <HeaderAplikasi subtitle={t('daily_expense_tracker')} icon='' pageUtama={true} />
                 </View>
                 {/* Date Navigation Bar */}
                 <View style={styles.dateNavBar}>
@@ -389,7 +380,7 @@ export default function MoneyPal() {
                         activeOpacity={summaryMode === 'Day' ? 0.7 : 1}
                         style={{ flex: 1 }}
                     >
-                        <Text style={[styles.dateNavText, { color: theme.primary }]}>{formatSummaryDate(selectedDate, summaryMode)}</Text>
+                        <Text style={[styles.dateNavText, { color: theme.primary }]}>{formatSummaryDate(selectedDate, summaryMode, i18n.language)}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.arrowButton}
@@ -423,7 +414,7 @@ export default function MoneyPal() {
                                 <Animated.View style={[styles.topBar, { backgroundColor: theme.bar }]} />
                             </View>
                         </GestureDetector>
-                        <Text style={styles.listTitle}>Transactions</Text>
+                        <Text style={styles.listTitle}>{t('transactions')}</Text>
                         {loading ? (
                             <FancyLoader />
                         ) : summaryMode === 'Day' ? (

@@ -2,9 +2,10 @@ import { uangUtils } from '@/utils/preferences';
 import { WarnaTema } from '@/utils/themes';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Category, MataUang, Transaction } from '../../types/types';
-import { getCategoryById } from '../../utils/categories';
+import { getCategoryById, TranslateKategori } from '../../utils/categories';
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -32,6 +33,8 @@ const TransactionItem = ({ transaction, mataUang, theme, onDelete, onEdit, custo
   const fallbackCategory = getCategoryById(fallbackCategoryId, transaction.type, customKategori);
 
   const category = mainCategory ?? (fallbackCategory as Category);
+  
+  const { i18n } = useTranslation();
 
   return (
     <>
@@ -85,7 +88,7 @@ const TransactionItem = ({ transaction, mataUang, theme, onDelete, onEdit, custo
                 <View style={[styles.categoryIcon, { backgroundColor: category.color }]}> 
                   <Text style={styles.categoryIconText}>{category.icon}</Text>
                 </View>
-                <Text style={[styles.categoryName, { color: theme.textSecondary, backgroundColor: theme.card }]}>{category.name}</Text>
+                <Text style={[styles.categoryName, { color: theme.textSecondary, backgroundColor: theme.card }]}>{TranslateKategori[i18n.language][category.id] ? TranslateKategori[i18n.language][category.id] : category.name}</Text>
               </View>
               {transaction.description && (
                 <View style={[styles.descriptionPill, { backgroundColor: theme.card }]}> 

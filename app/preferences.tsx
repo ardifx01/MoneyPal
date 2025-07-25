@@ -6,12 +6,22 @@ import { lightTheme as theme } from '@/utils/themes';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Localization from 'expo-localization';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Modal, Pressable, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import i18n from '../utils/i18n';
 import HeaderAplikasi from './components/HeaderAplikasi';
 
 const APP_NAME = 'MoneyPal';
-const APP_VERSION = 'v1.0.0';
+const APP_VERSION = 'v1.0.2';
+
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'id', label: 'Indonesian' },
+  { code: 'ja', label: 'Japanese' },
+];
+const bahasaTeknologi = Localization.getLocales()[0]?.languageCode || 'en';
 
 export default function Preferences() {
   // const colorScheme = useColorScheme();
@@ -31,12 +41,19 @@ export default function Preferences() {
   const [pinModalMode, setPinModalMode] = useState<'setup' | 'verify'>('setup');
   const [currentPin, setCurrentPin] = useState('');
   const [pinError, setPinError] = useState('');
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(bahasaTeknologi); // default English
   // const [themeModalVisible, setThemeModalVisible] = useState(false);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     // Load preferences from AsyncStorage
     (async () => {
       // await dapatTema(colorScheme);
+      const lang = await storageUtils.dapatinBahasa();
+      if (lang) {
+        setSelectedLanguage(lang);
+      }
 
       const [opsi, waktu] = await storageUtils.dapatinNotifikasi();
       setSettingNotifikasi({ opsi, waktu });
@@ -87,7 +104,7 @@ export default function Preferences() {
     <LinearGradient colors={theme.linearGradientBackground} style={{ flex: 1 }}>
       <View style={styles.container}>
         {/* Header with Back Button */}
-        <HeaderAplikasi subtitle='Preferences' pageUtama={false} icon='settings-outline' />
+        <HeaderAplikasi subtitle={t('preferences.title')} pageUtama={false} icon='settings-outline' />
 
         {/* Settings Cards */}
         <View style={styles.settingsContainer}>
@@ -119,12 +136,31 @@ export default function Preferences() {
                   <Ionicons name="cash-outline" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.cardText}>
-                  <Text style={[styles.cardTitle, { color: theme.text }]}>Currency Symbol</Text>
-                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>Choose your preferred currency</Text>
+                  <Text style={[styles.cardTitle, { color: theme.text }]}>{t('preferences.currency')}</Text>
+                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>{t('preferences.currency_sub')}</Text>
                 </View>
               </View>
               <View style={styles.cardRight}>
                 <Text style={[styles.currencyValue, { color: theme.primary }]}>{mataUang.symbol}</Text>
+                <Ionicons name="chevron-forward" size={20} color={theme.lightTextSecondary} />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Translation Card */}
+          <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.divider }]}> 
+            <TouchableOpacity style={styles.cardContent} onPress={() => setLanguageModalVisible(true)}>
+              <View style={styles.cardLeft}>
+                <View style={[styles.iconContainer, { backgroundColor: theme.bar }]}> 
+                  <Ionicons name="language-outline" size={24} color={theme.primary} />
+                </View>
+                <View style={styles.cardText}>
+                  <Text style={[styles.cardTitle, { color: theme.text }]}>{t('preferences.translation')}</Text>
+                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>{t('preferences.translation_sub')}</Text>
+                </View>
+              </View>
+              <View style={styles.cardRight}>
+                <Text style={[styles.currencyValue, { color: theme.primary }]}>{LANGUAGES.find(l => l.code === selectedLanguage)?.label}</Text>
                 <Ionicons name="chevron-forward" size={20} color={theme.lightTextSecondary} />
               </View>
             </TouchableOpacity>
@@ -138,8 +174,8 @@ export default function Preferences() {
                   <Ionicons name="notifications-outline" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.cardText}>
-                  <Text style={[styles.cardTitle, { color: theme.text }]}>Daily Reminder</Text>
-                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>Get notified to track your expenses</Text>
+                  <Text style={[styles.cardTitle, { color: theme.text }]}>{t('preferences.notification')}</Text>
+                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>{t('preferences.notification_sub')}</Text>
                 </View>
               </View>
               <Switch
@@ -176,8 +212,8 @@ export default function Preferences() {
                   <Ionicons name="lock-closed-outline" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.cardText}>
-                  <Text style={[styles.cardTitle, { color: theme.text }]}>Lock Screen</Text>
-                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>Protect your app with a PIN</Text>
+                  <Text style={[styles.cardTitle, { color: theme.text }]}>{t('preferences.lock_screen')}</Text>
+                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>{t('preferences.lock_screen_sub')}</Text>
                 </View>
               </View>
               <Switch
@@ -216,8 +252,8 @@ export default function Preferences() {
                   <Ionicons name="document-text-outline" size={24} color={theme.primary} />
                 </View>
                 <View style={styles.cardText}>
-                  <Text style={[styles.cardTitle, { color: theme.text }]}>Privacy Policy</Text>
-                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>Read our privacy terms</Text>
+                  <Text style={[styles.cardTitle, { color: theme.text }]}>{t('preferences.privacy')}</Text>
+                  <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>{t('preferences.privacy_sub')}</Text>
                 </View>
               </View>
               <Ionicons name="chevron-forward" size={20} color={theme.divider} />
@@ -235,7 +271,7 @@ export default function Preferences() {
           <Pressable style={styles.modalOverlay} onPress={() => setCurrencyModalVisible(false)}>
             <View style={[styles.modalContent, { backgroundColor: theme.card }]}> 
               <View style={[styles.modalHeader, { borderBottomColor: theme.divider }]}> 
-                <Text style={[styles.modalTitle, { color: theme.primary }]}>Select Currency</Text>
+                <Text style={[styles.modalTitle, { color: theme.primary }]}>{t('preferences.select_currency')}</Text>
                 <TouchableOpacity onPress={() => setCurrencyModalVisible(false)}>
                   <Ionicons name="close" size={24} color={theme.textSecondary} />
                 </TouchableOpacity>
@@ -248,7 +284,7 @@ export default function Preferences() {
                   <TouchableOpacity
                     style={[
                       styles.currencyOption,
-                      { borderBottomColor: theme.divider },
+                      { borderTopColor: theme.divider },
                       mataUang.symbol === item.symbol && { backgroundColor: theme.bar }
                     ]}
                     onPress={() => {
@@ -414,7 +450,7 @@ export default function Preferences() {
           <Pressable style={styles.modalOverlay} onPress={() => setPrivacyModalVisible(false)}>
             <View style={[styles.modalContent, { backgroundColor: theme.card }]}> 
               <View style={[styles.modalHeader, { borderBottomColor: theme.divider }]}> 
-                <Text style={[styles.modalTitle, { color: theme.primary }]}>Privacy Policy</Text>
+                <Text style={[styles.modalTitle, { color: theme.primary }]}>{t('preferences.privacy')}</Text>
                 <TouchableOpacity onPress={() => setPrivacyModalVisible(false)}>
                   <Ionicons name="close" size={24} color={theme.textSecondary} />
                 </TouchableOpacity>
@@ -423,8 +459,56 @@ export default function Preferences() {
                 We respect your privacy. Your data is stored only on your device and is never shared with third parties.
               </Text>
               <TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.primary }]} onPress={() => setPrivacyModalVisible(false)}>
-                <Text style={[styles.closeButtonText, { color: theme.textColorInBackground }]}>Close</Text>
+                <Text style={[styles.closeButtonText, { color: theme.textColorInBackground }]}>{t('general.close')}</Text>
               </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Modal>
+
+        {/* Language Modal */}
+        <Modal
+          visible={languageModalVisible}
+          animationType="slide"
+          backdropColor={'transparent'}
+          onRequestClose={() => setLanguageModalVisible(false)}
+        >
+          <Pressable style={styles.modalOverlay} onPress={() => setLanguageModalVisible(false)}>
+            <View style={[styles.modalContent, { backgroundColor: theme.card }]}> 
+              <View style={[styles.modalHeader, { borderBottomColor: theme.divider }]}> 
+                <Text style={[styles.modalTitle, { color: theme.primary }]}>{t('preferences.select_language')}</Text>
+                <TouchableOpacity onPress={() => setLanguageModalVisible(false)}>
+                  <Ionicons name="close" size={24} color={theme.textSecondary} />
+                </TouchableOpacity>
+              </View>
+              <FlatList
+                data={LANGUAGES}
+                keyExtractor={item => item.code}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.currencyOption,
+                      { borderTopColor: theme.divider },
+                      selectedLanguage === item.code && { backgroundColor: theme.bar }
+                    ]}
+                    onPress={() => {
+                      setSelectedLanguage(item.code);
+                      storageUtils.simpanBahasa(item.code);
+                      i18n.changeLanguage(item.code);
+                      setLanguageModalVisible(false);
+                    }}
+                  >
+                    <View style={styles.currencyInfo}>
+                      <Text style={[styles.currencySymbol, { color: theme.primary }]}>{item.label}</Text>
+                    </View>
+                    {selectedLanguage === item.code && (
+                      <View style={styles.selectedIndicator}>
+                        <Ionicons name="checkmark" size={20} color={theme.primary} />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                )}
+              />
             </View>
           </Pressable>
         </Modal>
@@ -494,8 +578,8 @@ export default function Preferences() {
         <View style={styles.footer}>
           <View style={styles.footerContent}>
             <Text style={[styles.footerAppName, { color: theme.primary }]}>{APP_NAME}</Text>
-            <Text style={[styles.footerVersion, { color: theme.textSecondary }]}>Version {APP_VERSION}</Text>
-            <Text style={[styles.footerDev, { color: theme.textSecondary }]}>Developed by Rafi</Text>
+            <Text style={[styles.footerVersion, { color: theme.textSecondary }]}>{t('general.version')} {APP_VERSION}</Text>
+            <Text style={[styles.footerDev, { color: theme.textSecondary }]}>{t('general.developed_by')}</Text>
           </View>
         </View>
       </View>
@@ -605,8 +689,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f8f9fa',
+    // borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderTopColor: '#f8f9fa',
   },
   currencyOptionSelected: {
     backgroundColor: '#f0f8ff',

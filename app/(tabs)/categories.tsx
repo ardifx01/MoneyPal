@@ -3,9 +3,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Category } from '../../types/types';
-import { expenseCategories, incomeCategories } from '../../utils/categories';
+import { expenseCategories, incomeCategories, TranslateKategori } from '../../utils/categories';
 import HeaderAplikasi from '../components/HeaderAplikasi';
 
 // Expanded color palette (36+ colors)
@@ -83,6 +84,7 @@ function CategoryModal({
         color: '#007bff',
         type: 'expense'
     });
+    const { t } = useTranslation();
 
     const isEditing = !!category;
 
@@ -103,15 +105,15 @@ function CategoryModal({
 
     const handleSave = () => {
         if (!formData.name.trim() || !formData.icon.trim()) {
-            Alert.alert('Error', 'Please enter a name and icon.');
+            Alert.alert(t('categories.error_title'), t('categories.error_name_icon'));
             return;
         }
         if (formData.name.trim().length > 35) {
-            Alert.alert('Error', 'Category name is too long (max 35 characters).');
+            Alert.alert(t('categories.error_title'), t('categories.error_name_length'));
             return;
         }
         if (Array.from(formData.icon.trim()).length !== 1 || !isSingleEmoji(formData.icon.trim())) {
-            Alert.alert('Error', 'Icon must be a single emoji character.');
+            Alert.alert(t('categories.error_title'), t('categories.error_icon'));
             return;
         }
 
@@ -145,12 +147,12 @@ function CategoryModal({
                     onPress={(e) => e.stopPropagation()}
                 >
                     <Text style={styles.modalTitle}>
-                        {isEditing ? 'Edit Category' : 'Add Category'}
+                        {isEditing ? t('categories.edit_category') : t('categories.add_category')}
                     </Text>
                     
                     <TextInput
                         style={styles.input}
-                        placeholder="Name"
+                        placeholder={t('categories.name_placeholder')}
                         placeholderTextColor="grey"
                         value={formData.name}
                         onChangeText={text => setFormData(prev => ({ ...prev, name: text }))}
@@ -158,7 +160,7 @@ function CategoryModal({
                     
                     <TextInput
                         style={styles.input}
-                        placeholder="Icon (emoji)"
+                        placeholder={t('categories.icon_placeholder')}
                         placeholderTextColor="grey"
                         value={formData.icon}
                         onChangeText={text => setFormData(prev => ({ ...prev, icon: text }))}
@@ -177,7 +179,7 @@ function CategoryModal({
                                 styles.typeButtonText,
                                 { color: formData.type === 'expense' ? '#fff' : '#222' }
                             ]}>
-                                Expense
+                                {t('add_transaction.expense')}
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -191,7 +193,7 @@ function CategoryModal({
                                 styles.typeButtonText,
                                 { color: formData.type === 'income' ? '#fff' : '#222' }
                             ]}>
-                                Income
+                                {t('add_transaction.income')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -204,10 +206,10 @@ function CategoryModal({
                     
                     <View style={styles.modalActions}>
                         <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
-                            <Text style={styles.cancelBtnText}>Cancel</Text>
+                            <Text style={styles.cancelBtnText}>{t('Cancel')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-                            <Text style={styles.saveBtnText}>Save</Text>
+                            <Text style={styles.saveBtnText}>{t('Save')}</Text>
                         </TouchableOpacity>
                     </View>
                 </TouchableOpacity>
@@ -220,6 +222,7 @@ export default function CategoriesScreen() {
     const { kategori, dapat, simpan, update, hapus } = useKategori();
     const [modalVisible, setModalVisible] = useState(false);
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         (async () => {
@@ -253,10 +256,10 @@ export default function CategoriesScreen() {
     };
 
     const handleDeleteCategory = (id: string) => {
-        Alert.alert('Delete Category', 'Are you sure?', [
-            { text: 'Cancel', style: 'cancel' },
+        Alert.alert(t('categories.delete_title'), t('categories.delete_message'), [
+            { text: t('categories.cancel'), style: 'cancel' },
             {
-                text: 'Delete', 
+                text: t('categories.delete'), 
                 style: 'destructive', 
                 onPress: () => hapus(id)
             }
@@ -268,7 +271,7 @@ export default function CategoriesScreen() {
             <View style={[styles.categoryIcon, { backgroundColor: item.color }]}>
                 <Text style={styles.categoryIconText}>{item.icon}</Text>
             </View>
-            <Text style={styles.categoryName}>{item.name}</Text>
+            <Text style={styles.categoryName}>{TranslateKategori[i18n.language][item.id] ? TranslateKategori[i18n.language][item.id] : item.name}</Text>
             {/* Show type badge for custom categories */}
             {editable && (
                 <View style={[
@@ -276,7 +279,7 @@ export default function CategoriesScreen() {
                     { backgroundColor: item.type === 'income' ? '#28a745' : '#dc3545' }
                 ]}>
                     <Text style={styles.typeBadgeText}>
-                        {item.type === 'income' ? 'Income' : 'Expense'}
+                        {item.type === 'income' ? t('income') : t('expenses')}
                     </Text>
                 </View>
             )}
@@ -307,10 +310,10 @@ export default function CategoriesScreen() {
             <SafeAreaView style={{ flex: 1 }}>
                 <StatusBar style="auto" />
                 {/* Fancy Header */}
-                <HeaderAplikasi subtitle='Manage Categories' icon='' pageUtama={true} />
+                <HeaderAplikasi subtitle={t('categories.manage_categories')} icon='' pageUtama={true} />
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                     <View style={styles.card}>
-                        <Text style={styles.sectionTitle}>Default Expense Categories</Text>
+                        <Text style={styles.sectionTitle}>{t('categories.default_expense_categories')}</Text>
                         <FlatList
                             data={expenseCategories}
                             keyExtractor={item => item.id}
@@ -319,7 +322,7 @@ export default function CategoriesScreen() {
                         />
                     </View>
                     <View style={styles.card}>
-                        <Text style={styles.sectionTitle}>Default Income Categories</Text>
+                        <Text style={styles.sectionTitle}>{t('categories.default_income_categories')}</Text>
                         <FlatList
                             data={incomeCategories}
                             keyExtractor={item => item.id}
@@ -328,19 +331,19 @@ export default function CategoriesScreen() {
                         />
                     </View>
                     <View style={styles.card}>
-                        <Text style={styles.sectionTitle}>Custom Categories</Text>
+                        <Text style={styles.sectionTitle}>{t('categories.custom_categories')}</Text>
                         <FlatList
                             data={kategori}
                             keyExtractor={item => item.id}
                             renderItem={({ item }) => renderCategory({ item, editable: true })}
                             ListEmptyComponent={
-                                <Text style={styles.emptyText}>No custom categories yet.</Text>
+                                <Text style={styles.emptyText}>{t('categories.no_custom_categories')}</Text>
                             }
                             scrollEnabled={false}
                         />
                         <TouchableOpacity style={styles.addBtn} onPress={handleAddCategory}>
                             <Ionicons name="add-circle" size={24} color="#fff" />
-                            <Text style={styles.addBtnText}>Add Category</Text>
+                            <Text style={styles.addBtnText}>{t('categories.add_category')}</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>

@@ -50,7 +50,7 @@ export const useBudget = create<BudgetState>((set, get) => ({
           data.budget[month].push(limit);
         }
       } else {
-        data.budget[month].filter((v) => v.categoryId !== limit.categoryId);
+        data.budget[month] = data.budget[month].filter((v) => v.categoryId !== limit.categoryId);
       }
 
       await storageUtils.saveBudgetData(data);

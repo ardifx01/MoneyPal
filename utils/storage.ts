@@ -10,6 +10,7 @@ const BUDGET_KEY = 'moneypal_budget';
 const NOTIFIKASI_KEY = "moneypal_daily_reminder";
 const WAKTU_NOTIFIKASI_KEY = "moneypal_daily_reminder_time";
 const PIN_KEY = "moneypal_pin";
+const LANG_KEY = 'moneypal_language';
 
 export const storageUtils = {
   // Save all transactions
@@ -275,4 +276,22 @@ export const storageUtils = {
       return {budget: {}, default: {}};
     }
   },
+
+  async dapatinBahasa(): Promise<string> {
+    try {
+      const data = await AsyncStorage.getItem(LANG_KEY);
+      return data || 'en';
+    } catch (error) {
+      console.error('Error loading language:', error);
+      return 'en';
+    }
+  },
+
+  async simpanBahasa(bahasa: string): Promise<void> {
+    try {
+      await AsyncStorage.setItem(LANG_KEY, bahasa);
+    } catch (error) {
+      console.error('Error saving language:', error);
+    }
+  }
 }; 

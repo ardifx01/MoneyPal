@@ -3,6 +3,7 @@ import { uangUtils } from '@/utils/preferences';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Alert,
     Image,
@@ -59,6 +60,7 @@ export default function AddTransactionModal({
     const [showCategoryPicker, setShowCategoryPicker] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [uneditedAmount, setUneditedAmount] = useState<number>(0);
+    const { t, i18n } = useTranslation();
 
     React.useEffect(() => {
         if (isEditMode && transaction) {
@@ -108,7 +110,7 @@ export default function AddTransactionModal({
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== 'granted') {
-            Alert.alert('Permission needed', 'Please grant permission to access your photo library.');
+            Alert.alert(t('add_transaction.permission_needed_title'), t('add_transaction.permission_needed_message'));
             return;
         }
 
@@ -135,11 +137,11 @@ export default function AddTransactionModal({
         // }
         const amount = parseFloat(formData.amount);
         if (isNaN(amount) || amount <= 0) {
-            Alert.alert('Error', 'Please enter a valid amount');
+            Alert.alert(t('add_transaction.error_title'), t('add_transaction.error_amount'));
             return;
         }
         if (!formData.category) {
-            Alert.alert('Error', 'Please select a category');
+            Alert.alert(t('add_transaction.error_title'), t('add_transaction.error_category'));
             return;
         }
         const newTransaction: Transaction = {
@@ -209,7 +211,7 @@ export default function AddTransactionModal({
         >
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>{isEditMode ? 'Edit Transaction' : 'Add Transaction'}</Text>
+                    <Text style={styles.title}>{isEditMode ? t('add_transaction.edit_title') : t('add_transaction.add_title')}</Text>
                     <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                         <Text style={styles.closeText}>×</Text>
                     </TouchableOpacity>
@@ -217,37 +219,37 @@ export default function AddTransactionModal({
 
                 <ScrollView style={styles.content}>
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Title (Optional)</Text>
+                        <Text style={styles.label}>{t('add_transaction.title_label')}</Text>
                         <TextInput
                             style={styles.input}
                             value={formData.title}
                             onChangeText={(text) => setFormData(prev => ({ ...prev, title: text }))}
-                            placeholder="Enter transaction title"
+                            placeholder={t('add_transaction.title_placeholder')}
                             placeholderTextColor={"grey"}
                             maxLength={50}
                         />
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Amount</Text>
+                        <Text style={styles.label}>{t('add_transaction.amount_label')}</Text>
                         <TouchableOpacity
                             style={styles.amountButton}
                             onPress={() => setShowCalculator(true)}
                         >
                             <Text style={styles.amountText}>
-                                {formData.amount ? uangUtils.simpleFormat(formData.amount, mataUang) : 'Tap to enter amount'}
+                                {formData.amount ? uangUtils.simpleFormat(formData.amount, mataUang) : t('add_transaction.amount_placeholder')}
                             </Text>
                         </TouchableOpacity>
                         {/* Remaining Budget */}
                         {remainingBudget !== null && (
                             <Text style={[styles.remainingBudgetText, remainingBudget < 0 && styles.remainingBudgetOver]}>
-                                Remaining Budget: {remainingBudget < 0 ? '-' : ''}{mataUang.symbol}{Math.abs(remainingBudget).toLocaleString()}
+                                {t('add_transaction.remaining_budget')}: {remainingBudget < 0 ? '-' : ''}{mataUang.symbol}{Math.abs(remainingBudget).toLocaleString()}
                             </Text>
                         )}
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Type</Text>
+                        <Text style={styles.label}>{t('add_transaction.type_label')}</Text>
                         <View style={styles.typeContainer}>
                             <TouchableOpacity
                                 style={[
@@ -262,7 +264,7 @@ export default function AddTransactionModal({
                                         formData.type === 'expense' && styles.typeTextActive,
                                     ]}
                                 >
-                                    Expense
+                                    {t('add_transaction.expense')}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -278,14 +280,14 @@ export default function AddTransactionModal({
                                         formData.type === 'income' && styles.typeTextActive,
                                     ]}
                                 >
-                                    Income
+                                    {t('add_transaction.income')}
                                 </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Category</Text>
+                        <Text style={styles.label}>{t('add_transaction.category_label')}</Text>
                         <TouchableOpacity
                             style={styles.categoryButton}
                             onPress={() => setShowCategoryPicker(true)}
@@ -298,18 +300,18 @@ export default function AddTransactionModal({
                                     <Text style={styles.categoryText}>{selectedCategory.name}</Text>
                                 </View>
                             ) : (
-                                <Text style={styles.categoryPlaceholder}>Select a category</Text>
+                                <Text style={styles.categoryPlaceholder}>{t('add_transaction.category_placeholder')}</Text>
                             )}
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Description (Optional)</Text>
+                        <Text style={styles.label}>{t('add_transaction.description_label')}</Text>
                         <TextInput
                             style={[styles.input, styles.textArea]}
                             value={formData.description}
                             onChangeText={(text) => setFormData(prev => ({ ...prev, description: text }))}
-                            placeholder="Add a description..."
+                            placeholder={t('add_transaction.description_placeholder')}
                             placeholderTextColor={"grey"}
                             multiline
                             numberOfLines={3}
@@ -318,29 +320,29 @@ export default function AddTransactionModal({
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Image (Optional)</Text>
+                        <Text style={styles.label}>{t('add_transaction.image_label')}</Text>
                         {selectedImage ? (
                             <View style={styles.imageContainer}>
                                 <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
                                 <TouchableOpacity style={styles.removeImageButton} onPress={removeImage}>
-                                    <Text style={styles.removeImageText}>Remove</Text>
+                                    <Text style={styles.removeImageText}>{t('add_transaction.remove_image')}</Text>
                                 </TouchableOpacity>
                             </View>
                         ) : (
                             <TouchableOpacity style={styles.addImageButton} onPress={pickImage}>
-                                <Text style={styles.addImageText}>📷 Add Photo</Text>
+                                <Text style={styles.addImageText}>📷 {t('add_transaction.add_photo')}</Text>
                             </TouchableOpacity>
                         )}
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text style={styles.label}>Date</Text>
+                        <Text style={styles.label}>{t('add_transaction.date_label')}</Text>
                         <TouchableOpacity
                             style={styles.dateButton}
                             onPress={() => setShowDatePicker(true)}
                         >
                             <Text style={styles.dateText}>
-                                {dateUtils.formatDateForDisplay(dateUtils.parseDate(formData.date))}
+                                {dateUtils.formatDateForDisplay(dateUtils.parseDate(formData.date), i18n.language)}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -357,10 +359,10 @@ export default function AddTransactionModal({
 
                 <View style={styles.footer}>
                     <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
-                        <Text style={styles.cancelText}>Cancel</Text>
+                        <Text style={styles.cancelText}>{t('add_transaction.cancel')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <Text style={styles.saveText}>Save</Text>
+                        <Text style={styles.saveText}>{t('add_transaction.save')}</Text>
                     </TouchableOpacity>
                 </View>
 

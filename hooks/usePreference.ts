@@ -64,7 +64,6 @@ export const useNotifikasi = create<NotifikasiState>((set, get) => ({
     waktu: { hour: 20, minute: 0 },
     dapat: async () => {
         const [opsi_notfikasi, waktu_notifikasi] = await storageUtils.dapatinNotifikasi();
-        console.log(opsi_notfikasi);
         set({ opsi: opsi_notfikasi, waktu: waktu_notifikasi });
     },
     ganti: async (opsi_notfikasi, waktu_notifikasi) => {

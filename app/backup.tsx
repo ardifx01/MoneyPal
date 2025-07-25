@@ -5,6 +5,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
@@ -29,6 +30,7 @@ export default function Backup() {
   const { mataUang, dapat: dapatMataUang } = useMataUang();
   const { budgetData, dapat: dapatBudget } = useBudget();
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     dapatKategori();
@@ -80,12 +82,12 @@ export default function Backup() {
             filename: fileName,
         });
 
-        Alert.alert('Backup Successful', `Backup file saved in Download folder: ${fileName}`);
+        Alert.alert(t('backup.success_title'), t('backup.success_message', { fileName }));
     } catch (error: any) {
         if (error.message === 'User did not share') {
-            Alert.alert('Backup Successful', `Backup file saved in Download folder: ${fileName}`);
+            Alert.alert(t('backup.success_title'), t('backup.success_message', { fileName }));
         } else {
-            Alert.alert('Backup Failed', 'Could not create backup. Please try again.');
+            Alert.alert(t('backup.failed_title'), t('backup.failed_message'));
         }
     } finally {
         setIsBackingUp(false);
@@ -96,20 +98,18 @@ export default function Backup() {
     <LinearGradient colors={["#f8f9fa", "#e3f2fd", "#f8f9fa"]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header with Back Button */}
-        <HeaderAplikasi subtitle='Backup Data' pageUtama={false} icon='cloud-upload-outline' />
+        <HeaderAplikasi subtitle={t('backup.backup_data')} pageUtama={false} icon='cloud-upload-outline' />
 
         <View style={styles.centered}>
           <View style={styles.card}>
             <View style={styles.iconCircle}>
               <Ionicons name="cloud-upload-outline" size={44} color="#00b894" />
             </View>
-            <Text style={styles.title}>Backup Your Data</Text>
-            <Text style={styles.desc}>
-              This will save all your transactions, custom categories, and images into a single file. You can restore it later from the Restore page.
-            </Text>
+            <Text style={styles.title}>{t('backup.backup_your_data')}</Text>
+            <Text style={styles.desc}>{t('backup.backup_desc')}</Text>
             <View style={styles.infoRow}>
               <Ionicons name="folder-outline" size={20} color="#007bff" style={{ marginRight: 6 }} />
-              <Text style={styles.infoText}>Export file will be in your <Text style={{ color: '#007bff', fontWeight: 'bold' }}>Download</Text> folder</Text>
+              <Text style={styles.infoText}>{t('backup.export_file_location')}</Text>
             </View>
             <TouchableOpacity
               style={[styles.button, isBackingUp && styles.buttonDisabled]}
@@ -117,7 +117,7 @@ export default function Backup() {
               disabled={isBackingUp}
             >
               <Ionicons name={isBackingUp ? 'hourglass-outline' : 'cloud-upload-outline'} size={24} color="#fff" />
-              <Text style={styles.buttonText}>{isBackingUp ? 'Backing Up...' : 'Backup Now'}</Text>
+              <Text style={styles.buttonText}>{isBackingUp ? t('backup.backing_up') : t('backup.backup_now')}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,6 +1,7 @@
 import { uangUtils } from '@/utils/preferences';
 import { WarnaTema } from '@/utils/themes';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { DailySummary, MataUang } from '../../types/types';
 
@@ -17,18 +18,20 @@ export default function Summary({ summary, mataUang, theme }: SummaryProps) {
     return '#6c757d';
   };
 
+  const { t } = useTranslation();
+
   return (
     <View style={[styles.container, { backgroundColor: theme.card }]} pointerEvents='box-none'>
       <View style={styles.row}>
         <View style={styles.column}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Income</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('summary.income')}</Text>
           <Text style={[styles.amount, { color: '#28a745' }]}>
             {uangUtils.formatAmount(summary.totalIncome, mataUang)}
           </Text>
         </View>
         
         <View style={styles.column}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Expenses</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('summary.expenses')}</Text>
           <Text style={[styles.amount, { color: '#dc3545' }]}>
             {uangUtils.formatAmount(summary.totalExpenses, mataUang)}
           </Text>
@@ -36,7 +39,7 @@ export default function Summary({ summary, mataUang, theme }: SummaryProps) {
       </View>
       
       <View style={[styles.balanceContainer, { borderTopColor: theme.divider }]} pointerEvents='box-none'>
-        <Text style={[styles.balanceLabel, { color: theme.textSecondary }]}>Net Balance</Text>
+        <Text style={[styles.balanceLabel, { color: theme.textSecondary }]}>{t('summary.balance')}</Text>
         <Text style={[styles.balanceAmount, { color: getBalanceColor(summary.netBalance) }]}>
           {uangUtils.formatAmount(summary.netBalance, mataUang)}
         </Text>
