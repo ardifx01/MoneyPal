@@ -222,5 +222,9 @@
     "message": "This will clear all your expenses. Are you sure?",
     "cancel": "Cancel",
     "reset": "Reset"
+  },
+  "balance_calendar": {
+    "positive_balance": "Positive Balance",
+    "negative_balance": "Negative Balance"
   }
 }

@@ -17,7 +17,7 @@ import {
     View,
 } from 'react-native';
 import { Category, MataUang, TipeBudget, Transaction, TransactionFormData } from '../../types/types';
-import { getCategoryById } from '../../utils/categories';
+import { getCategoryById, TranslateKategori } from '../../utils/categories';
 import { dateUtils } from '../../utils/dateUtils';
 import Calculator from './Calculator';
 import CategoryPicker from './CategoryPicker';
@@ -297,7 +297,7 @@ export default function AddTransactionModal({
                                     <View style={[styles.categoryIcon, { backgroundColor: selectedCategory.color }]}>
                                         <Text style={styles.categoryIconText}>{selectedCategory.icon}</Text>
                                     </View>
-                                    <Text style={styles.categoryText}>{selectedCategory.name}</Text>
+                                    <Text style={styles.categoryText}>{TranslateKategori[i18n.language][selectedCategory.id] ? TranslateKategori[i18n.language][selectedCategory.id] : selectedCategory.name}</Text>
                                 </View>
                             ) : (
                                 <Text style={styles.categoryPlaceholder}>{t('add_transaction.category_placeholder')}</Text>

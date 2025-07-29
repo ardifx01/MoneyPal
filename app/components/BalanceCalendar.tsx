@@ -123,11 +123,11 @@ export default function BalanceCalendar({
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#28a745' }]} />
-          <Text style={styles.legendText}>Positive Balance</Text>
+          <Text style={styles.legendText}>{t('balance_calendar.positive_balance')}</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#dc3545' }]} />
-          <Text style={styles.legendText}>Negative Balance</Text>
+          <Text style={styles.legendText}>{t('balance_calendar.negative_balance')}</Text>
         </View>
       </View>
     </View>

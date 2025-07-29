@@ -222,5 +222,9 @@
       "message": "Ini akan menghapus semua pengeluaran Anda. Apakah Anda yakin?",
       "cancel": "Batal",
       "reset": "Hapus"
+    },
+    "balance_calendar": {
+      "positive_balance": "Saldo Positif",
+      "negative_balance": "Saldo Negatif"
     }
 }

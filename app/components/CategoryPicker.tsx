@@ -1,6 +1,7 @@
 import { useKategori } from '@/hooks/useCategory';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { i18n } from 'i18next';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,7 +14,7 @@ import {
     View,
 } from 'react-native';
 import { Category } from '../../types/types';
-import { getCategoriesByType } from '../../utils/categories';
+import { getCategoriesByType, TranslateKategori } from '../../utils/categories';
 
 interface CategoryPickerProps {
     visible: boolean;
@@ -46,7 +47,7 @@ function useCategoryCardAnimation() {
 }
 
 // Card component for each category
-function CategoryCard({ item, isSelected, onPress }: { item: Category, isSelected: boolean, onPress: () => void }) {
+function CategoryCard({ item, isSelected, i18n, onPress }: { item: Category, isSelected: boolean, i18n: i18n, onPress: () => void }) {
     const { scale, handlePressIn, handlePressOut } = useCategoryCardAnimation();
     return (
         <Animated.View style={{ transform: [{ scale }], flex: 1 }}>
@@ -83,7 +84,7 @@ function CategoryCard({ item, isSelected, onPress }: { item: Category, isSelecte
                         styles.categoryName,
                         isSelected && styles.selectedCategoryName,
                     ]}>
-                        {item.name}
+                        {TranslateKategori[i18n.language][item.id] ? TranslateKategori[i18n.language][item.id] : item.name}
                     </Text>
                 </LinearGradient>
             </TouchableOpacity>
@@ -99,7 +100,7 @@ export default function CategoryPicker({
     selectedCategory,
 }: CategoryPickerProps) {
     const { kategori, dapat } = useKategori();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         dapat();
@@ -118,6 +119,7 @@ export default function CategoryPicker({
     const renderCategoryItem = ({ item }: { item: Category }) => (
         <CategoryCard
             item={item}
+            i18n={i18n}
             isSelected={selectedCategory === item.id}
             onPress={() => {
                 onSelect(item);

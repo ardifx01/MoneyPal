@@ -14,7 +14,7 @@ import i18n from '../utils/i18n';
 import HeaderAplikasi from './components/HeaderAplikasi';
 
 const APP_NAME = 'MoneyPal';
-const APP_VERSION = 'v1.0.2';
+const APP_VERSION = 'v1.0.4';
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },

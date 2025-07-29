@@ -222,5 +222,9 @@
       "message": "これにより、すべての経費が削除されます。よろしいですか？",
       "cancel": "キャンセル",
       "reset": "リセット"
+    },
+    "balance_calendar": {
+      "positive_balance": "正の残高",
+      "negative_balance": "負の残高"
     }
 }
