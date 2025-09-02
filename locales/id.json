@@ -169,7 +169,12 @@
       "add_photo": "Tambah Foto",
       "date_label": "Tanggal",
       "cancel": "Batal",
-      "save": "Simpan"
+      "save": "Simpan",
+      "upload_photo": "Unggah Foto",
+      "choose_option": "Pilih opsi",
+      "take_photo": "Ambil Foto",
+      "pick_from_gallery": "Pilih dari Galeri",
+      "permission_needed_message_camera": "Izin untuk mengakses kamera diperlukan untuk mengambil foto."
     },
     "calculator": {
       "clear": "Hapus",

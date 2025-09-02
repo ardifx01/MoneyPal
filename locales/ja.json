@@ -169,7 +169,12 @@
       "add_photo": "写真を追加",
       "date_label": "日付",
       "cancel": "キャンセル",
-      "save": "保存"
+      "save": "保存",
+      "upload_photo": "写真をアップロード",
+      "choose_option": "オプションを選択",
+      "take_photo": "写真を撮影",
+      "pick_from_gallery": "ギャラリーから選択",
+      "permission_needed_message_camera": "写真を撮影するためにはカメラへのアクセスが必要です。"
     },
     "calculator": {
       "clear": "クリア",

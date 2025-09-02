@@ -117,14 +117,45 @@ export default function AddTransactionModal({
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
+            // aspect: [4, 3],
+            quality: 0.7,
         });
 
         if (!result.canceled && result.assets[0]) {
             setSelectedImage(result.assets[0].uri);
         }
     };
+
+    const pickCamera = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert(t('add_transaction.permission_needed_title'), t('add_transaction.permission_needed_message_camera'));
+            return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            // aspect: [4, 3],
+            quality: 0.7,
+        });
+
+        if (!result.canceled && result.assets[0]) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    };
+
+    const pilihGambar = () => {
+        Alert.alert(
+            t('add_transaction.upload_photo'),
+            t('add_transaction.choose_option'),
+            [
+                { text: t('add_transaction.take_photo'), onPress: pickCamera },
+                { text: t('add_transaction.pick_from_gallery'), onPress: pickImage },
+                { text: t('add_transaction.cancel'), style: "cancel" }
+            ]
+        );
+    };
+        
 
     const removeImage = () => {
         setSelectedImage(null);
@@ -329,7 +360,7 @@ export default function AddTransactionModal({
                                 </TouchableOpacity>
                             </View>
                         ) : (
-                            <TouchableOpacity style={styles.addImageButton} onPress={pickImage}>
+                            <TouchableOpacity style={styles.addImageButton} onPress={pilihGambar}>
                                 <Text style={styles.addImageText}>📷 {t('add_transaction.add_photo')}</Text>
                             </TouchableOpacity>
                         )}
